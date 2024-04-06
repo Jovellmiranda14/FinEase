@@ -1,0 +1,96 @@
+// import React, { useState } from 'react';
+// import { View, TextInput, TouchableOpacity, Text, StyleSheet, ImageBackground } from 'react-native';
+
+// const LoginForm = () => {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+
+//   const handleLogin = () => {
+//     // Perform login logic here
+//     console.log('Email:', email);
+//     console.log('Password:', password);
+//     // You can send data to your backend for authentication
+//   };
+
+//   const handleForgotPassword = () => {
+//     // Implement your logic for handling forgot password here
+//     console.log('Forgot Password clicked');
+//   };
+
+//   return (
+//     <ImageBackground source={require('./BI.png')} style={styles.background}>
+//       <View style={styles.container}>
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Username or Number"
+//           onChangeText={(text) => setEmail(text)}
+//           value={email}
+//           keyboardType="email-address"
+//           autoCapitalize="none"
+//         />
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Password"
+//           onChangeText={(text) => setPassword(text)}
+//           value={password}
+//           secureTextEntry={true}
+//         />
+//         <TouchableOpacity onPress={handleForgotPassword}>
+//           <Text style={styles.forgotPassword}>Forgot Password?</Text>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity style={styles.button} onPress={handleLogin}>
+//           <Text style={styles.buttonText}>Login</Text>
+//         </TouchableOpacity>
+        
+//       </View>
+//     </ImageBackground>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   background: {
+//     flex: 1,
+//     resizeMode: 'cover',
+//     justifyContent: 'center',
+//   },
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     paddingHorizontal: 20,
+//   },
+//   input: {
+//     height: 40,
+//     width: 300,
+//     borderRadius: 25,
+//     borderWidth: 1,
+//     marginBottom: 10,
+//     marginLeft: 28,
+//     paddingHorizontal: 8,
+//     backgroundColor: '#D9D9D9',
+//   },
+//   button: {
+//     width: 200,
+//     backgroundColor: 'transparent',
+//     borderColor: '#D9D9D9',
+//     borderRadius: 25,
+//     borderWidth: 2,
+//     marginTop: 50,
+//     marginLeft: 70,
+//     paddingVertical: 10,
+//   },
+//   buttonText: {
+//     color: '#D9D9D9',
+//     textAlign: 'center',
+//     fontSize: 16,
+//     fontWeight: 'bold',
+//   },
+//   forgotPassword: {
+//     color: '#D9D9D9',
+//     textAlign: 'right',
+//     fontSize: 12,
+//     marginRight:43,
+//     textDecorationLine: 'underline',
+    
+//   },
+// });
