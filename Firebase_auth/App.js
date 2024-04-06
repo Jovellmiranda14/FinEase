@@ -48,7 +48,7 @@ const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogi
           {isLogin ? 'Need an account? Register Now' : 'Already have an account? Login'}
         </Text>
       </View>
-    </View>
+    </View>d
   );
 }
 
