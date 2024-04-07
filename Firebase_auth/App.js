@@ -8,6 +8,7 @@ import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
 
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyDGfl7xaCepBqjcWEl0KM_EpJ4UCkw0r-Y",
   authDomain: "fir-react-a8bde.firebaseapp.com",
@@ -77,7 +78,7 @@ const App = () => {
       {user ? (
         <HomeScreen user={user} handleAuthentication={handleAuthentication} />
       ) : (
-        <AuthScreen isLogin={isLogin} />
+        <ForgotPassword/>
       )}
     </ScrollView>
   );
