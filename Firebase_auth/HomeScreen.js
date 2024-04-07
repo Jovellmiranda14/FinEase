@@ -13,11 +13,10 @@ const HomeScreen = ({ user, handleAuthentication }) => {
 
   return (
     <View style={{ alignItems: 'center' }}>
- 
+        
       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Welcome</Text>
-      <Text>{user.Fullname}</Text>
+      <Text>{user.email}</Text>
       <Button title="Logout" onPress={(logoutUser) => handleAuthentication('', '')} color="#e74c3c" />
-
     </View>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, ScrollView } from 'react-native';
+import { View, Text, Button, ScrollView, StyleSheet  } from 'react-native';
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
-
+import ForgotPassword from './ForgotPassword';
 
 
 const firebaseConfig = {
@@ -77,7 +77,7 @@ const App = () => {
       {user ? (
         <HomeScreen user={user} handleAuthentication={handleAuthentication} />
       ) : (
-        <AuthScreen isLogin={isLogin} />
+        <LoginForm handleAuthentication={handleAuthentication} />
       )}
     </ScrollView>
   );
