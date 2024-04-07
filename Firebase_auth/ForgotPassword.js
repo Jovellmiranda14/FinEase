@@ -34,6 +34,13 @@ const ForgotPassword = () => {
         color="#3498db"
       />
       {resetMessage ? <Text>{resetMessage}</Text> : null}
+      
+      
+      <Text> Back to Login Page? </Text>
+      
+      <TouchableOpacity onPress={goToLogin}>
+        <Text>Login Now</Text>
+      </TouchableOpacity>
     </View>
   );
 };

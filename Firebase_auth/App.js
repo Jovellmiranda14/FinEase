@@ -5,7 +5,6 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
-import ForgotPassword from './ForgotPassword';
 
 
 
@@ -78,7 +77,7 @@ const App = () => {
       {user ? (
         <HomeScreen user={user} handleAuthentication={handleAuthentication} />
       ) : (
-        <ForgotPassword/>
+        <AuthScreen isLogin={isLogin} />
       )}
     </ScrollView>
   );
