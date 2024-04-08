@@ -24,8 +24,7 @@ const app = initializeApp(firebaseConfig);
 const AuthScreen = ({ isLogin }) => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>Get Started with</Text>
-      <Text style={{ fontSize: 30, fontWeight: 'bold', marginBottom: 20, color: '#3498db' }}>FinEase</Text>
+     
       {isLogin ? <LoginForm /> : <SignUpForm /> }
     </View>
   );

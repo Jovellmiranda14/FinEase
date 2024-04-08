@@ -38,6 +38,8 @@ const LoginForm = () => {
 
   return (
     <View>
+       <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>Get Started with</Text>
+      <Text style={{ fontSize: 30, fontWeight: 'bold', marginBottom: 20, color: '#3498db' }}>FinEase</Text>
       {showSignUpForm ? (
         <SignUpForm onBackToLogin={() => setShowSignUpForm(false)} />
       ) : showForgotPassword ? (

@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
 import { Text, TextInput, Button, View, TouchableOpacity } from 'react-native';
-import { getAuth, sendPasswordResetEmail } from '@firebase/auth';
+import { getAuth, sendPasswordResetEmail,fetchSignInMethodsForEmail } from '@firebase/auth';
 
 const ForgotPassword = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [resetMessage, setResetMessage] = useState('');
+  const auth = getAuth();
 
   const handleResetPassword = async () => {
     try {
-      const auth = getAuth();
+      // Check if the email is registered
+      const methods = await fetchSignInMethodsForEmail(auth, email);
+      if (methods.length === 0) {
+        // Email is not registered
+        setResetMessage('This email is not registered. Please enter a valid email.');
+        return;
+      }
+
+      // Email is registered, send the reset email
       await sendPasswordResetEmail(auth, email);
       setResetMessage('Password reset email sent. Please check your inbox.');
     } catch (error) {
       console.error('Error sending password reset email:', error.message);
-      setResetMessage('Error sending password reset email. Please try again.');
+      setResetMessage('Failed to send password reset email. Please try again.');
     }
   };
 
@@ -32,6 +41,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
         color="#3498db"
       />
       {resetMessage ? <Text>{resetMessage}</Text> : null}
+      <Text> </Text>
       <Text>Back to Login Page?</Text>
       <TouchableOpacity onPress={onBackToLogin}>
         <Text>Login Now</Text>
