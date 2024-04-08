@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
 import { getAuth, sendPasswordResetEmail } from '@firebase/auth';
 
 const ForgotPassword = () => {
@@ -38,7 +38,7 @@ const ForgotPassword = () => {
       
       <Text> Back to Login Page? </Text>
       
-      <TouchableOpacity onPress={goToLogin}>
+      <TouchableOpacity>
         <Text>Login Now</Text>
       </TouchableOpacity>
     </View>

@@ -33,7 +33,7 @@ const SignUpForm = () => {
       <Text> FinEase </Text>
       <Text>  </Text>
       <TextInput
-      
+      style={{ height: 40, width: 300, borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 }}
         placeholder="UserName"
         value={Fullname}
         onChangeText={setFullname}
@@ -41,29 +41,29 @@ const SignUpForm = () => {
       />
   
       <TextInput
-      
+      style={{ height: 40, width: 300, borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 }}
         placeholder="Phone Number (Optional)"
         value={phoneNumber}
         onChangeText={setPhoneNumber}
         autoCapitalize="none"
       />
             <TextInput
-            
+        style={{ height: 40, width: 300, borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 }}
         placeholder="Email Address"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
       />
-      <TextInput
-     
+      {/* <TextInput
+     style={{ height: 40, width: 300, borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 }}
         placeholder="Date of Birth"
         value={dateOfBirth}
         onChangeText={setDateOfBirth}
         autoCapitalize="none"
-      />
+      /> */}
 
       <TextInput
-      
+      style={{ height: 40, width: 300, borderWidth: 1, marginBottom: 10, paddingHorizontal: 8 }}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
