@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
+import { Text, TextInput, Button, View, TouchableOpacity } from 'react-native';
 import { getAuth, sendPasswordResetEmail } from '@firebase/auth';
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [resetMessage, setResetMessage] = useState('');
- 
+
   const handleResetPassword = async () => {
     try {
       const auth = getAuth();
@@ -19,10 +19,8 @@ const ForgotPassword = () => {
 
   return (
     <View>
-      <Text >Forgot Password</Text>
-      <Text > </Text>
+      <Text>Forgot Password</Text>
       <TextInput
-
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -34,16 +32,12 @@ const ForgotPassword = () => {
         color="#3498db"
       />
       {resetMessage ? <Text>{resetMessage}</Text> : null}
-      
-      
-      <Text> Back to Login Page? </Text>
-      
-      <TouchableOpacity>
+      <Text>Back to Login Page?</Text>
+      <TouchableOpacity onPress={onBackToLogin}>
         <Text>Login Now</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
-
-  export default ForgotPassword;
+export default ForgotPassword;

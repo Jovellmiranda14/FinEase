@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Text, TextInput, Button, View, TouchableOpacity } from 'react-native';
+import SignUpForm from './SignUpForm';
+import ForgotPassword from './ForgotPassword';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 
-
-
-const LoginForm = ({ onRegisterNow }) => {
+const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSignUpForm, setShowSignUpForm] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const auth = getAuth();
-
-
 
   const handleLogin = async () => {
     try {
@@ -24,36 +24,48 @@ const LoginForm = ({ onRegisterNow }) => {
     }
   };
 
-    
+  const handleRegisterNow = () => {
+    setShowSignUpForm(true);
+  };
+
+  const handleForgotPassword = () => {
+    setShowForgotPassword(true);
+  };
+
+  const handleBackToLogin = () => {
+    setShowForgotPassword(false);
+  };
+
   return (
     <View>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-     <TouchableOpacity >
-        <Text>Forgot Password</Text>
-      </TouchableOpacity> 
-
-      {errorMessage ? <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text> : null}
-      <Button title="Login" onPress={handleLogin} color="#3498db" />
-
-
-
-      <TouchableOpacity onPress={onRegisterNow}>
-        <Text>Register Now</Text>
-      </TouchableOpacity>
-
-
+      {showSignUpForm ? (
+        <SignUpForm onBackToLogin={() => setShowSignUpForm(false)} />
+      ) : showForgotPassword ? (
+        <ForgotPassword onBackToLogin={handleBackToLogin} />
+      ) : (
+        <>
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+          />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+          <TouchableOpacity onPress={handleForgotPassword}>
+            <Text>Forgot Password</Text>
+          </TouchableOpacity>
+          {errorMessage ? <Text style={{ color: 'red', marginBottom: 10 }}>{errorMessage}</Text> : null}
+          <Button title="Login" onPress={handleLogin} color="#3498db" />
+          <TouchableOpacity onPress={handleRegisterNow}>
+            <Text>Register Now</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
