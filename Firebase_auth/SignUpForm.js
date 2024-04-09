@@ -45,35 +45,35 @@ const SignUpForm = ({ onBackToLogin }) => {
       <Text> FinEase </Text>
       <Text>  </Text>
       <TextInput
-        style={styles.input}
+
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+
         placeholder="Last Name"
         value={lastName}
         onChangeText={setLastName}
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+
         placeholder="Phone Number (Optional)"
         value={phoneNumber}
         onChangeText={setPhoneNumber}
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+
         placeholder="Email Address"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
       />
       <TextInput
-        style={styles.input}
+
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -83,6 +83,7 @@ const SignUpForm = ({ onBackToLogin }) => {
       <TouchableOpacity onPress={handleSignUp}>
         <Text>Create an Account</Text>
       </TouchableOpacity>
+
       <Text>Have an Account?</Text>
       <TouchableOpacity onPress={onBackToLogin}>
         <Text>Login Now</Text>
@@ -91,17 +92,6 @@ const SignUpForm = ({ onBackToLogin }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 15,
-    padding: 10,
-    marginBottom: 10,
-    width: '115%',
-    height: '8%',
-  }
-});
+
 
 export default SignUpForm;
