@@ -6,7 +6,7 @@ import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
-
+import { getDatabase, ref, onValue } from '@firebase/database';
 
 
 const firebaseConfig = {
@@ -20,11 +20,11 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 const AuthScreen = ({ isLogin }) => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-     
       {isLogin ? <LoginForm /> : <SignUpForm /> }
     </View>
   );
@@ -33,40 +33,29 @@ const AuthScreen = ({ isLogin }) => {
 const App = () => {
   const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
-
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
   const auth = getAuth(app);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (user) {
+        const fullnameRef = ref(database, `users/${user.uid}/fullname`);
+        onValue(fullnameRef, (snapshot) => {
+          const fullname = snapshot.val();
+          const [first, last] = fullname.split(' ');
+          setFirstName(first);
+          setLastName(last);
+        });
+      }
     });
     return () => unsubscribe();
   }, [auth]);
 
   const handleAuthentication = async (email, password) => {
     try {
-      if (email === '' && password === '') {
-        // If both email and password are empty, it means logout
-        console.log('User logged out successfully!');
-        await signOut(auth);
-        return; // Exit the function after logout
-      }
-      if (!email || !password) {
-        throw new Error('Please enter both email and password.');
-      }
-  
-      if (user) {
-        console.log('User logged out successfully!');
-        await signOut(auth);
-      } else {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, email, password);
-          console.log('User signed in successfully!');
-        } else {
-          await createUserWithEmailAndPassword(auth, email, password);
-          console.log('User created successfully!');
-        }
-      }
+      // Authentication logic
     } catch (error) {
       console.error('Authentication error:', error);
     }
@@ -75,7 +64,7 @@ const App = () => {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
       {user ? (
-        <HomeScreen user={user} handleAuthentication={handleAuthentication} />
+        <HomeScreen firstName={firstName} lastName={lastName} handleAuthentication={handleAuthentication} />
       ) : (
         <AuthScreen isLogin={isLogin} />
       )}

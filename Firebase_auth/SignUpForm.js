@@ -1,21 +1,37 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
+import { getDatabase, ref, set } from 'firebase/database';
 
 const SignUpForm = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [Fullname, setFullname] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const auth = getAuth();
 
   const handleSignUp = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password, Fullname);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      await updateProfile(user, { displayName: Fullname }); 
+
+      // Update user's profile with first name and last name
+      await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+
+      // Save additional user data to database
+      const db = getDatabase();
+      const userRef = ref(db, 'users/' + user.uid);
+      await set(userRef, {
+        email: user.email,
+        firstName: firstName,
+        lastName: lastName,
+        phoneNumber: phoneNumber,
+        dateOfBirth: dateOfBirth,
+      });
+
       console.log('User created successfully:', user.displayName);
     } catch (error) {
       console.error('Sign up error:', error);
@@ -29,24 +45,35 @@ const SignUpForm = ({ onBackToLogin }) => {
       <Text> FinEase </Text>
       <Text>  </Text>
       <TextInput
-        placeholder="UserName"
-        value={Fullname}
-        onChangeText={setFullname}
+        style={styles.input}
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={setFirstName}
         autoCapitalize="none"
       />
       <TextInput
+        style={styles.input}
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={setLastName}
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Phone Number (Optional)"
         value={phoneNumber}
         onChangeText={setPhoneNumber}
         autoCapitalize="none"
       />
       <TextInput
+        style={styles.input}
         placeholder="Email Address"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
       />
       <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
@@ -63,5 +90,18 @@ const SignUpForm = ({ onBackToLogin }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 15,
+    padding: 10,
+    marginBottom: 10,
+    width: '115%',
+    height: '8%',
+  }
+});
 
 export default SignUpForm;
