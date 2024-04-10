@@ -35,7 +35,11 @@ const SignUpForm = ({ onBackToLogin }) => {
       console.log('User created successfully:', user.displayName);
     } catch (error) {
       console.error('Sign up error:', error);
-      setErrorMessage('Failed to create user. Please try again.');
+      if (error.code === 'auth/invalid-email') {
+        setErrorMessage('Invalid email address. Please enter a valid email.');
+      } else {
+        setErrorMessage('Failed to create user. Please try again.');
+      }
     }
   };
 

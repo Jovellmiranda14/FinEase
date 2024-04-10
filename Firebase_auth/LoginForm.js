@@ -9,7 +9,7 @@ const CustomButton = ({ title, onPress }) => (
     <Text style={styles.buttonText}>{title}</Text>
   </TouchableOpacity>
 );
-
+const MAX_LOGIN_ATTEMPTS = 3;
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-
+  const [loginAttempts, setLoginAttempts] = useState(0);
   const auth = getAuth();
 
   const handleLogin = async () => {
@@ -28,6 +28,10 @@ const LoginForm = () => {
     } catch (error) {
       console.error('Login error:', error);
       setErrorMessage('Invalid email or password.');
+      setLoginAttempts(loginAttempts + 1);
+      if (loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
+        setShowForgotPassword(true); // Redirect to forgot password screen after max attempts
+      }
     }
   };
 
