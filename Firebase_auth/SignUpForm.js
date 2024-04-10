@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
@@ -40,6 +40,7 @@ const SignUpForm = ({ onBackToLogin }) => {
   };
 
   return (
+
     <View style={{ alignItems: 'center' }}>
       <Text>Get Started with</Text>
       <Text> FinEase </Text>
@@ -91,7 +92,6 @@ const SignUpForm = ({ onBackToLogin }) => {
     </View>
   );
 };
-
 
 
 export default SignUpForm;

@@ -45,12 +45,12 @@ const LoginForm = () => {
 
   return (
     <View style={styles.container}>
-        <ImageBackground source={require('./BI.png')} style={styles.backgroundImage}>
       {showSignUpForm ? (
         <SignUpForm onBackToLogin={() => setShowSignUpForm(false)} />
       ) : showForgotPassword ? (
         <ForgotPassword onBackToLogin={handleBackToLogin} />
       ) : (
+        <ImageBackground source={require('./Images/BI.png')} style={styles.backgroundImage}>
         <View style={styles.content}>
           <TextInput
           style={styles.emailInput}
@@ -81,11 +81,13 @@ const LoginForm = () => {
              <Text style={styles.registerNow}>No Account? Register Now!</Text>
           </TouchableOpacity>
         </View>
-        
+        </ImageBackground>  
       )}
-      </ImageBackground>
+      
     </View>
+    
   );
+  
 };
 const styles = StyleSheet.create({
   container: {
