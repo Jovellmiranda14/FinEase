@@ -45,7 +45,7 @@ const LoginForm = () => {
 
   return (
     <View style={styles.container}>
-        <ImageBackground source={require('./BI.jpg')} style={styles.backgroundImage}>
+        <ImageBackground source={require('./BI.png')} style={styles.backgroundImage}>
       {showSignUpForm ? (
         <SignUpForm onBackToLogin={() => setShowSignUpForm(false)} />
       ) : showForgotPassword ? (
