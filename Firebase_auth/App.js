@@ -38,21 +38,23 @@ const App = () => {
   
   const auth = getAuth(app);
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     setUser(user);
-  //     if (user) {
-  //       const fullnameRef = ref(database, `users/${user.uid}/fullname`);
-  //       onValue(fullnameRef, (snapshot) => {
-  //         const fullname = snapshot.val();
-  //         const [first, last] = fullname.split(' ');
-  //         setFirstName(first);
-  //         setLastName(last);
-  //       });
-  //     }
-  //   });
-  //   return () => unsubscribe();
-  // }, [auth]);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const fullnameRef = ref(database, `users/${user.uid}/fullname`);
+        onValue(fullnameRef, (snapshot) => {
+          const fullname = snapshot.val();
+          if (fullname) {
+            const [first, last] = fullname.split(' ');
+            setFirstName(first);
+            setLastName(last);
+          }
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, [auth]);
   
   const handleAuthentication = async (email, password) => {
     try {
