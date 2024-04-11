@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
@@ -35,11 +35,16 @@ const SignUpForm = ({ onBackToLogin }) => {
       console.log('User created successfully:', user.displayName);
     } catch (error) {
       console.error('Sign up error:', error);
-      setErrorMessage('Failed to create user. Please try again.');
+      if (error.code === 'auth/invalid-email') {
+        setErrorMessage('Invalid email address. Please enter a valid email.');
+      } else {
+        setErrorMessage('Failed to create user. Please try again.');
+      }
     }
   };
 
   return (
+
     <View style={{ alignItems: 'center' }}>
       <Text>Get Started with</Text>
       <Text> FinEase </Text>
@@ -91,7 +96,6 @@ const SignUpForm = ({ onBackToLogin }) => {
     </View>
   );
 };
-
 
 
 export default SignUpForm;
