@@ -35,23 +35,24 @@ const App = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
+  
   const auth = getAuth(app);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        const fullnameRef = ref(database, `users/${user.uid}/fullname`);
-        onValue(fullnameRef, (snapshot) => {
-          const fullname = snapshot.val();
-          const [first, last] = fullname.split(' ');
-          setFirstName(first);
-          setLastName(last);
-        });
-      }
-    });
-    return () => unsubscribe();
-  }, [auth]);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     setUser(user);
+  //     if (user) {
+  //       const fullnameRef = ref(database, `users/${user.uid}/fullname`);
+  //       onValue(fullnameRef, (snapshot) => {
+  //         const fullname = snapshot.val();
+  //         const [first, last] = fullname.split(' ');
+  //         setFirstName(first);
+  //         setLastName(last);
+  //       });
+  //     }
+  //   });
+  //   return () => unsubscribe();
+  // }, [auth]);
   
   const handleAuthentication = async (email, password) => {
     try {
