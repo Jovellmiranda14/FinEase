@@ -1,13 +1,163 @@
-import React from 'react';
-import { View, Text, Button } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image } from 'react-native';
 
-const HomeScreen = ({ firstName, lastName }) => {
+const HomePage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-300)).current;
+
+  const toggleSidebar = () => {
+    if (isSidebarOpen) {
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setIsSidebarOpen(false));
+    } else {
+      setIsSidebarOpen(true);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
   return (
-    <View style={{ alignItems: 'center' }}>
-      <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Welcome to FinEase</Text>
-      <Text style={{ marginTop: 10 }}>Hello, {firstName} {lastName}!</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        {/* Sidebar Button */}
+        <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+          <Text style={styles.sidebarButtonText}>≡</Text>
+        </TouchableOpacity>
+        {/* Logo */}
+        <Text style={styles.logo}>Logo</Text>
+        {/* User Icon */}
+        <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+      </View>
+      {/* Search Bar */}
+      <TextInput
+        placeholder="Search"
+        style={styles.searchBar}
+      />
+      <View style={styles.cardsContainer}>
+        {/* Clickable Cards */}
+        <TouchableOpacity style={[styles.card, styles.doubleCard]}>
+          <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Records</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Task/Calendar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Online Banking</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Rewards</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Goal Setting</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+          <Text>Investment</Text>
+        </TouchableOpacity>
+      </View>
+      {/* Sidebar */}
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={isSidebarOpen}
+        onRequestClose={toggleSidebar}
+      >
+        <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
+          <Text>Sidebar Content</Text>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>Close</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      </Modal>
     </View>
   );
 };
 
-export default HomeScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  sidebarButton: {
+    padding: 10,
+  },
+  sidebarButtonText: {
+    fontSize: 20,
+  },
+  logo: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  searchBar: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  card: {
+    width: '48%',
+    height: 150,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cardText: {
+    textAlign: 'center', // Center align text within the card
+  },
+  doubleCard: {
+    width: '100%', // Occupies the full width of the container
+  },
+  normalCard: {
+    width: '48%', // Occupies half of the container
+  },
+  sidebar: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 300,
+    backgroundColor: '#fff',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+  },
+  cardsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  userIcon: {
+    width: 30, // Adjust as needed
+    height: 30, // Adjust as needed
+    borderRadius: 15, // Half of the width and height to make it a circle
+    marginRight: 10, // Adjust as needed
+  },
+});
+
+export default HomePage;
