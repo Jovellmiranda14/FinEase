@@ -68,7 +68,7 @@ const SignUpForm = ({ onBackToLogin }) => {
         placeholder="Phone Number (Optional)"
         value={phoneNumber}
         onChangeText={setPhoneNumber}
-        autoCapitalize="none"
+        keyboardType='numeric'
       />
       <TextInput
 
