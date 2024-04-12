@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image } from 'react-native';
+import { getAuth, onAuthStateChanged } from '@firebase/auth'; // Import Firebase functions
+import { getDatabase, ref, onValue } from '@firebase/database';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import RecordsScreen from './RecordsScreen';
@@ -8,24 +10,30 @@ import TaskCalendarScreen from './TaskCalendarScreen';
 
 const HomePage = ({ navigation }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [firstName, setFirstName] = useState(null);
+  const [lastName, setLastName] = useState(null);
+  const [user, setUser] = useState(null);
   const slideAnim = useRef(new Animated.Value(-300)).current;
-
+  
+  const database = getDatabase();
+  const auth = getAuth();
   useEffect(() => {
-    // Example function to fetch user data based on email
-    const fetchUserData = async (email) => {
-      // Make API call or retrieve data from your database
-      // This is a placeholder, replace it with your actual implementation
-      const userData = await yourUserDataFetchingFunction(email);
-      // Extract user name from userData
-      setUserName(userData.name);
-    };
-
-    // Call fetchUserData with the user's email
-    const userEmail = 'user@example.com'; // Replace with actual user's email
-    fetchUserData(userEmail);
-  }, []);
-
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName);
+            setLastName(lastName);
+          }
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, [auth]);
   const toggleSidebar = () => {
     if (isSidebarOpen) {
       Animated.timing(slideAnim, {
@@ -113,7 +121,7 @@ const HomePage = ({ navigation }) => {
         onRequestClose={toggleSidebar}
       >
         <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
-          <Text style={styles.sidebarItem}>{userName}</Text>
+          <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
             <Text>Records</Text>
           </TouchableOpacity>

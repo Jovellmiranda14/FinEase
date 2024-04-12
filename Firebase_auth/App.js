@@ -46,9 +46,9 @@ const App = () => {
         onValue(fullnameRef, (snapshot) => {
           const fullname = snapshot.val();
           if (fullname) {
-            const [first, last] = fullname.split(' ');
-            setFirstName(first);
-            setLastName(last);
+            const [firstName, last] = fullname.split(' ');
+            setFirstName(firstName);
+            setLastName(lastName);
           }
         });
       }

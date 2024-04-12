@@ -54,7 +54,7 @@ const LoginForm = () => {
       ) : showForgotPassword ? (
         <ForgotPassword onBackToLogin={handleBackToLogin} />
       ) : (
-        <ImageBackground source={require('./Images/BI.png')} style={styles.backgroundImage}>
+        <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
         <View style={styles.content}>
           <TextInput
           style={styles.emailInput}

@@ -3,6 +3,11 @@ import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground } 
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
+const CustomButton = ({ title, onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.button}>
+    <Text style={styles.buttonText}>{title}</Text>
+  </TouchableOpacity>
+);
 const SignUpForm = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,57 +50,151 @@ const SignUpForm = ({ onBackToLogin }) => {
 
   return (
 
-    <View style={{ alignItems: 'center' }}>
-      <Text>Get Started with</Text>
-      <Text> FinEase </Text>
-      <Text>  </Text>
-      <TextInput
+      <View style={styles.container}>
+       <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
+          <View style={styles.content}>
+            <TextInput
+              style={styles.firstNameInput}
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.lastNameInput}
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.phoneNumberInput}
+              placeholder="Phone Number (Optional)"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              keyboardType='numeric'
+            />
+            <TextInput
+              style={styles.emailInput}
+              placeholder="Email Address"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.passwordInput}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+            <CustomButton title="Create an Account" onPress={handleSignUp} />
+            <TouchableOpacity onPress={onBackToLogin}>
+              <Text style={styles.registerNow}>Have an Account? Login Now</Text>
+            </TouchableOpacity>
+          </View>
+        </ImageBackground>
+      </View>
+    );
+  };
+  
 
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-        autoCapitalize="none"
-      />
-      <TextInput
 
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-        autoCapitalize="none"
-      />
-      <TextInput
-
-        placeholder="Phone Number (Optional)"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType='numeric'
-      />
-      <TextInput
-
-        placeholder="Email Address"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <TextInput
-
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      {errorMessage ? <Text>{errorMessage}</Text> : null}
-      <TouchableOpacity onPress={handleSignUp}>
-        <Text>Create an Account</Text>
-      </TouchableOpacity>
-
-      <Text>Have an Account?</Text>
-      <TouchableOpacity onPress={onBackToLogin}>
-        <Text>Login Now</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
-
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+  content: {
+    padding: 20,
+    borderRadius: 10,
+    marginHorizontal: 90,
+    alignItems: 'center',
+  },
+  firstNameInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginTop: 160,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
+  lastNameInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
+  phoneNumberInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
+  emailInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
+  passwordInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
+  errorMessage: {
+    color: 'red',
+    marginBottom: 10,
+  },
+  registerNow: {
+    marginTop: 20,
+    color: 'white',
+    textDecorationLine: 'underline'
+  },
+  button: {
+    marginTop: 20,
+    borderRadius: 15,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'white',
+    width: '70%',
+    height: '9%',
+    backgroundColor: '#492FAA',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'normal',
+  },
+});
 
 export default SignUpForm;
