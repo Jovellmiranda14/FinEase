@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import RecordsScreen from './RecordsScreen';
+import TaskCalendarScreen from './TaskCalendarScreen';
+// Import other screens similarly
 
-const HomePage = () => {
+const HomePage = ({ navigation }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const slideAnim = useRef(new Animated.Value(-300)).current;
@@ -57,25 +62,46 @@ const HomePage = () => {
       />
       <View style={styles.cardsContainer}>
         {/* Clickable Cards */}
-        <TouchableOpacity style={[styles.card, styles.doubleCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.doubleCard]}
+          onPress={() => navigation.navigate('Welcome')}
+        >
           <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Records')}
+        >
           <Text>Records</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('TaskCalendar')}
+        >
           <Text>Task/Calendar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('OnlineBanking')}
+        >
           <Text>Online Banking</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Rewards')}
+        >
           <Text>Rewards</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('GoalSetting')}
+        >
           <Text>Goal Setting</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Investment')}
+        >
           <Text>Investment</Text>
         </TouchableOpacity>
       </View>
