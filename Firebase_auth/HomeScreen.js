@@ -1,9 +1,30 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import RecordsScreen from './RecordsScreen';
+import TaskCalendarScreen from './TaskCalendarScreen';
+// Import other screens similarly
 
-const HomePage = () => {
+const HomePage = ({ navigation }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userName, setUserName] = useState('');
   const slideAnim = useRef(new Animated.Value(-300)).current;
+
+  useEffect(() => {
+    // Example function to fetch user data based on email
+    const fetchUserData = async (email) => {
+      // Make API call or retrieve data from your database
+      // This is a placeholder, replace it with your actual implementation
+      const userData = await yourUserDataFetchingFunction(email);
+      // Extract user name from userData
+      setUserName(userData.name);
+    };
+
+    // Call fetchUserData with the user's email
+    const userEmail = 'user@example.com'; // Replace with actual user's email
+    fetchUserData(userEmail);
+  }, []);
 
   const toggleSidebar = () => {
     if (isSidebarOpen) {
@@ -41,25 +62,46 @@ const HomePage = () => {
       />
       <View style={styles.cardsContainer}>
         {/* Clickable Cards */}
-        <TouchableOpacity style={[styles.card, styles.doubleCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.doubleCard]}
+          onPress={() => navigation.navigate('Welcome')}
+        >
           <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Records')}
+        >
           <Text>Records</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('TaskCalendar')}
+        >
           <Text>Task/Calendar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('OnlineBanking')}
+        >
           <Text>Online Banking</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Rewards')}
+        >
           <Text>Rewards</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('GoalSetting')}
+        >
           <Text>Goal Setting</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.card, styles.normalCard]}>
+        <TouchableOpacity
+          style={[styles.card, styles.normalCard]}
+          onPress={() => navigation.navigate('Investment')}
+        >
           <Text>Investment</Text>
         </TouchableOpacity>
       </View>
@@ -71,7 +113,25 @@ const HomePage = () => {
         onRequestClose={toggleSidebar}
       >
         <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
-          <Text>Sidebar Content</Text>
+          <Text style={styles.sidebarItem}>{userName}</Text>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Records</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Task/Calendar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Online Banking</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Rewards</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Goal Setting</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+            <Text>Investment</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
             <Text style={styles.closeButtonText}>Close</Text>
           </TouchableOpacity>
@@ -137,6 +197,9 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sidebarItem: {
+    marginBottom: 10,
   },
   closeButton: {
     marginTop: 20,
