@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, TouchableOpacity } from 'react-native';
 
 const RecordsScreen = () => {
   const [money, setMoney] = useState('');
@@ -12,12 +12,6 @@ const RecordsScreen = () => {
   const [totalSpent, setTotalSpent] = useState(0);
   const [totalSaved, setTotalSaved] = useState(0);
   const [filteredRecords, setFilteredRecords] = useState([]);
-
-  // Function to format date as complete words (e.g., "January 1, 2023")
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
 
   const handleMoneyChange = (text) => {
     if (!text.trim()) {
@@ -103,17 +97,13 @@ const RecordsScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text> </Text>
-      <Text> </Text>
-      <Text></Text>
-      <Text style={styles.title}>Total Amount Spent:</Text>
-      <Text>${totalSpent.toFixed(2)}</Text>
-      <Text style={styles.title}>Total Amount Saved:</Text> 
-      <Text>${totalSaved.toFixed(2)}</Text>
+    <View>
+      <Text>Total Amount Spent:</Text>
+      <Text>{totalSpent.toFixed(2)}</Text>
+      <Text>Total Amount Saved:</Text> 
+      <Text>{totalSaved.toFixed(2)}</Text>
 
       <TextInput
-        style={styles.input}
         placeholder="Enter Amount"
         keyboardType="numeric"
         value={money}
@@ -121,14 +111,13 @@ const RecordsScreen = () => {
       />
 
       <TextInput
-        style={styles.input}
         placeholder="Enter Source"
         value={source}
         onChangeText={handleSourceChange}
       />
-      <Text style={styles.title}>Date: {formatDate(date)}</Text>
-      <View style={styles.categoryContainer}>
-        <Text style={styles.title}>Transaction Type:</Text>
+      <Text>Date: {date.toDateString()}</Text>
+      <View>
+        <Text>Transaction Type:</Text>
         <Button
           title={category === 'Income' ? 'Income' : 'Spent'}
           onPress={() => setCategory(category === 'Income' ? 'Spent' : 'Income')}
@@ -136,8 +125,8 @@ const RecordsScreen = () => {
       </View>
 
       <Button title="Submit" onPress={handleSubmit} />
-      <Text style={styles.title}>Transaction Details:</Text>
-      <View style={styles.categoryContainer}>
+      <Text>Transaction Details:</Text>
+      <View>
         <Button
           title="All"
           onPress={() => filterRecords('All')}
@@ -152,16 +141,15 @@ const RecordsScreen = () => {
         />
       </View>
 
-      <View style={styles.recordsContainer}>
-        
+      <View>
         {filteredRecords.map(record => (
-          <View key={record.id} style={styles.recordItem}>
-            <Text>{record.category} Transaction</Text>
-            <Text>Money:${record.money.toFixed(2)}</Text>
+          <View key={record.id}>
+            <Text>Money: {record.money.toFixed(2)}</Text>
             <Text>Source: {record.source}</Text>
-            <Text>Date: {formatDate(record.date)}</Text>
+            <Text>Date: {record.date}</Text>
+            <Text>Category: {record.category}</Text>
             <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>
-              <Text style={styles.deleteButton}>Delete</Text>
+              <Text>Delete</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -169,40 +157,5 @@ const RecordsScreen = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 10,
-  },
-  input: {
-    width: '80%',
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-  },
-  categoryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  recordsContainer: {
-    marginTop: 20,
-  },
-  recordItem: {
-    marginBottom: 10,
-  },
-  deleteButton: {
-    color: 'red',
-  },
-});
 
 export default RecordsScreen;

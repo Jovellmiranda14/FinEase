@@ -13,12 +13,6 @@ const RecordsScreen = () => {
   const [totalSaved, setTotalSaved] = useState(0);
   const [filteredRecords, setFilteredRecords] = useState([]);
 
-  // Function to format date as complete words (e.g., "January 1, 2023")
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
   const handleMoneyChange = (text) => {
     if (!text.trim()) {
       setMoney('0');
@@ -106,11 +100,11 @@ const RecordsScreen = () => {
     <View style={styles.container}>
       <Text> </Text>
       <Text> </Text>
-      <Text></Text>
+      <Text> </Text>
       <Text style={styles.title}>Total Amount Spent:</Text>
-      <Text>${totalSpent.toFixed(2)}</Text>
+      <Text>{totalSpent.toFixed(2)}</Text>
       <Text style={styles.title}>Total Amount Saved:</Text> 
-      <Text>${totalSaved.toFixed(2)}</Text>
+      <Text>{totalSaved.toFixed(2)}</Text>
 
       <TextInput
         style={styles.input}
@@ -126,7 +120,7 @@ const RecordsScreen = () => {
         value={source}
         onChangeText={handleSourceChange}
       />
-      <Text style={styles.title}>Date: {formatDate(date)}</Text>
+      <Text style={styles.title}>Date: {date.toDateString()}</Text>
       <View style={styles.categoryContainer}>
         <Text style={styles.title}>Transaction Type:</Text>
         <Button
@@ -153,13 +147,12 @@ const RecordsScreen = () => {
       </View>
 
       <View style={styles.recordsContainer}>
-        
         {filteredRecords.map(record => (
           <View key={record.id} style={styles.recordItem}>
-            <Text>{record.category} Transaction</Text>
-            <Text>Money:${record.money.toFixed(2)}</Text>
+            <Text>Money: {record.money.toFixed(2)}</Text>
             <Text>Source: {record.source}</Text>
-            <Text>Date: {formatDate(record.date)}</Text>
+            <Text>Date: {record.date}</Text>
+            <Text>Category: {record.category}</Text>
             <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>
               <Text style={styles.deleteButton}>Delete</Text>
             </TouchableOpacity>

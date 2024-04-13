@@ -7,6 +7,7 @@ import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
 import { getDatabase, ref, onValue } from '@firebase/database';
+import RecordsScreen from './RecordsScreen';
 
 
 const firebaseConfig = {
@@ -90,7 +91,7 @@ const App = () => {
       {user ? (
         <HomeScreen firstName={firstName} lastName={lastName} handleAuthentication={handleAuthentication} />
       ) : (
-        <AuthScreen isLogin={isLogin} />
+        <RecordsScreen />
       )}
     </ScrollView>
   );
