@@ -3,6 +3,7 @@ import { View, Text, Button, ScrollView, StyleSheet  } from 'react-native';
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
 import LoginForm from './LoginForm';
+
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
@@ -91,7 +92,7 @@ const App = () => {
       {user ? (
         <HomeScreen firstName={firstName} lastName={lastName} handleAuthentication={handleAuthentication} />
       ) : (
-        <RecordsScreen />
+        <AuthScreen isLogin={isLogin} />
       )}
     </ScrollView>
   );
