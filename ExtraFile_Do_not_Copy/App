@@ -62,14 +62,14 @@
 //       console.error('Authentication error:', error);
 //     }
 //   };
-
+//           <Button title="Logout" onPress={() => handleAuthentication(null, null)} color="#e74c3c" />
 //   return (
 //     <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
 //       {user ? (
 //         <View style={{ alignItems: 'center' }}>
 //           <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Welcome</Text>
 //           <Text>{user.email}</Text>
-//           <Button title="Logout" onPress={() => handleAuthentication(null, null)} color="#e74c3c" />
+
 //         </View>
 //       ) : (
 //         <AuthScreen isLogin={isLogin} />

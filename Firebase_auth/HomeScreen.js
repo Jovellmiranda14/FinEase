@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image } from 'react-native';
-import { getAuth, onAuthStateChanged } from '@firebase/auth'; // Import Firebase functions
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button } from 'react-native';
+import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
+ // Import Firebase functions
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -34,6 +35,21 @@ const HomePage = ({ navigation }) => {
     });
     return () => unsubscribe();
   }, [auth]);
+
+  const handleAuthentication = async () => {
+    try {
+      if (!user) {
+        throw new Error('User not logged in.');
+      }
+  
+      console.log('User logged out successfully!');
+      await signOut(auth);
+      setUser(null); // Clear the user state after logout
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   const toggleSidebar = () => {
     if (isSidebarOpen) {
       Animated.timing(slideAnim, {
@@ -121,6 +137,7 @@ const HomePage = ({ navigation }) => {
         onRequestClose={toggleSidebar}
       >
         <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
+        <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
           <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
             <Text>Records</Text>
@@ -140,9 +157,9 @@ const HomePage = ({ navigation }) => {
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
             <Text>Investment</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>Close</Text>
-          </TouchableOpacity>
+          {user ? ( // Render logout button if user is logged in
+        <Button title="Logout" onPress={() => handleAuthentication(null, null)} color="#e74c3c" />
+      ) : null}
         </Animated.View>
       </Modal>
     </View>
