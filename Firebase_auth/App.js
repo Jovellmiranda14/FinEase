@@ -3,14 +3,17 @@ import { View, Text, Button, ScrollView, StyleSheet  } from 'react-native';
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
 import LoginForm from './LoginForm';
-
+import Userprofile from './Userprofile';
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import RecordsScreen from './RecordsScreen';
+import TaskCalendarScreen from './TaskCalendarScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-
+const Stack = createStackNavigator();
 const firebaseConfig = {
   apiKey: "AIzaSyDGfl7xaCepBqjcWEl0KM_EpJ4UCkw0r-Y",
   authDomain: "fir-react-a8bde.firebaseapp.com",
@@ -88,13 +91,24 @@ const App = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
-      {user ? (
-        <HomeScreen firstName={firstName} lastName={lastName} handleAuthentication={handleAuthentication} />
-      ) : (
-        <AuthScreen isLogin={isLogin} />
-      )}
-    </ScrollView>
+<NavigationContainer>
+<Stack.Navigator initialRouteName={user ? "Home" : "Auth"}>
+  {user ? (
+    <>
+      <Stack.Screen name="Home" options={{ headerShown: false }}>
+        {() => <HomeScreen firstName={firstName} lastName={lastName} />}
+      </Stack.Screen>
+      <Stack.Screen name="Records" component={RecordsScreen} />
+      <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
+      <Stack.Screen name="Profile" component={Userprofile} />
+    </>
+  ) : (
+    <Stack.Screen name="Auth" options={{ headerShown: false }}>
+      {() => <AuthScreen isLogin={true} />}
+    </Stack.Screen>
+  )}
+</Stack.Navigator>
+</NavigationContainer>
   );
 };
 

@@ -1,15 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button } from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
- // Import Firebase functions
 import { getDatabase, ref, onValue } from '@firebase/database';
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-import RecordsScreen from './RecordsScreen';
-import TaskCalendarScreen from './TaskCalendarScreen';
-// Import other screens similarly
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
-const HomePage = ({ navigation }) => {
+const HomeScreen = () => {
+  const navigation = useNavigation(); // Use the useNavigation hook to get the navigation prop
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
@@ -77,7 +73,9 @@ const HomePage = ({ navigation }) => {
         {/* Logo */}
         <Text style={styles.logo}>Logo</Text>
         {/* User Icon */}
-        <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+        </TouchableOpacity>
       </View>
       {/* Search Bar */}
       <TextInput
@@ -88,7 +86,6 @@ const HomePage = ({ navigation }) => {
         {/* Clickable Cards */}
         <TouchableOpacity
           style={[styles.card, styles.doubleCard]}
-          onPress={() => navigation.navigate('Welcome')}
         >
           <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
         </TouchableOpacity>
@@ -134,33 +131,37 @@ const HomePage = ({ navigation }) => {
         animationType="none"
         transparent={true}
         visible={isSidebarOpen}
-        onRequestClose={toggleSidebar}
-      >
+        onRequestClose={toggleSidebar}>
+
         <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
-        <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>≤</Text>
+          </TouchableOpacity>
+          <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
           <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
             <Text>Records</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
             <Text>Task/Calendar</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
             <Text>Online Banking</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
             <Text>Rewards</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('GoalSetting')} style={styles.sidebarItem}>
             <Text>Goal Setting</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarItem}>
+          <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
             <Text>Investment</Text>
           </TouchableOpacity>
           {user ? ( // Render logout button if user is logged in
-        <Button title="Logout" onPress={() => handleAuthentication(null, null)} color="#e74c3c" />
-      ) : null}
+            <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
+          ) : null}
         </Animated.View>
+
       </Modal>
     </View>
   );
@@ -231,6 +232,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
+    zIndex: 1,
   },
   closeButtonText: {
     fontSize: 16,
@@ -246,6 +248,28 @@ const styles = StyleSheet.create({
     borderRadius: 15, // Half of the width and height to make it a circle
     marginRight: 10, // Adjust as needed
   },
+  sidebar: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 300,
+    backgroundColor: '#fff',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sidebarItem: {
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    fontSize: 16,
+  },
 });
 
-export default HomePage;
+export default HomeScreen;

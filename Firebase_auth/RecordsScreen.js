@@ -153,8 +153,8 @@ const RecordsScreen = () => {
       </View>
 
       <View style={styles.recordsContainer}>
-        
-        {filteredRecords.map(record => (
+
+      {filteredRecords.slice(0).reverse().map(record => (
           <View key={record.id} style={styles.recordItem}>
             <Text>{record.category} Transaction</Text>
             <Text>Money:${record.money.toFixed(2)}</Text>

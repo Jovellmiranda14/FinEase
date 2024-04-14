@@ -15,7 +15,6 @@ const SignUpForm = ({ onBackToLogin }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
   const auth = getAuth();
 
   const handleSignUp = async () => {
@@ -34,7 +33,6 @@ const SignUpForm = ({ onBackToLogin }) => {
         firstName: firstName,
         lastName: lastName,
         phoneNumber: phoneNumber,
-        dateOfBirth: dateOfBirth,
       });
 
       console.log('User created successfully:', user.displayName);
