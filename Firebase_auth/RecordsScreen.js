@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const RecordsScreen = () => {
   const [money, setMoney] = useState('');
@@ -152,7 +153,7 @@ const RecordsScreen = () => {
         />
       </View>
 
-      <View style={styles.recordsContainer}>
+      <ScrollView  style={styles.recordsContainer}>
 
       {filteredRecords.slice(0).reverse().map(record => (
           <View key={record.id} style={styles.recordItem}>
@@ -165,7 +166,7 @@ const RecordsScreen = () => {
             </TouchableOpacity>
           </View>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };
