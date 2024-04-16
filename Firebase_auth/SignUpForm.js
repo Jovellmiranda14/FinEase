@@ -51,6 +51,7 @@ const SignUpForm = ({ onBackToLogin }) => {
       <View style={styles.container}>
        <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
           <View style={styles.content}>
+            
             <TextInput
               style={styles.firstNameInput}
               placeholder="First Name"
@@ -58,6 +59,7 @@ const SignUpForm = ({ onBackToLogin }) => {
               onChangeText={setFirstName}
               autoCapitalize="none"
             />
+            
             <TextInput
               style={styles.lastNameInput}
               placeholder="Last Name"

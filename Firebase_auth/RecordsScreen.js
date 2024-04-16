@@ -137,6 +137,8 @@ const RecordsScreen = () => {
       </View>
 
       <Button title="Submit" onPress={handleSubmit} />
+
+
       <Text style={styles.title}>Transaction Details:</Text>
       <View style={styles.categoryContainer}>
         <Button
@@ -158,7 +160,7 @@ const RecordsScreen = () => {
       {filteredRecords.slice(0).reverse().map(record => (
           <View key={record.id} style={styles.recordItem}>
             <Text>{record.category} Transaction</Text>
-            <Text>Money:${record.money.toFixed(2)}</Text>
+            <Text>Amount:${record.money.toFixed(2)}</Text>
             <Text>Source: {record.source}</Text>
             <Text>Date: {formatDate(record.date)}</Text>
             <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>

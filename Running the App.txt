@@ -1,2 +1,17 @@
 cd firebase_auth
 npx expo start
+
+
+Source: 
+Amount:  
+
+
+Sumbit
+
+----------------------------------------------------------------------------------------------------------
+
+Source: Sweldo
+Amount: 500
+
+Source: 
+Amount:  
