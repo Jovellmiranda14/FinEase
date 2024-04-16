@@ -16,7 +16,7 @@ const [filteredCards, setFilteredCards] = useState([]);
 
 const cards = [
   { id: 2, name: 'Records' },
-  { id: 3, name: 'Task/Calendar' },
+  { id: 3, name: 'TaskCalendar' },
   { id: 4, name: 'Online Banking' },
   { id: 5, name: 'Rewards' },
   { id: 6, name: 'Goal Setting' },
@@ -143,7 +143,7 @@ const cards = [
         style={[styles.card, styles.normalCard]}
         onPress={() => navigation.navigate('TaskCalendar')}
       >
-        <Text>Task/Calendar</Text>
+        <Text>TaskCalendar</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.card, styles.normalCard]}
@@ -189,7 +189,7 @@ const cards = [
             <Text>Records</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
-            <Text>Task/Calendar</Text>
+            <Text>TaskCalendar</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
             <Text>Online Banking</Text>

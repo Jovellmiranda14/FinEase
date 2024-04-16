@@ -2,17 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, ScrollView, StyleSheet  } from 'react-native';
 import { initializeApp } from '@firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from '@firebase/auth';
+import { getDatabase, ref, onValue } from '@firebase/database';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import LoginForm from './LoginForm';
 import Userprofile from './Userprofile';
 import SignUpForm from './SignUpForm';
 import HomeScreen from './HomeScreen';
 import ForgotPassword from './ForgotPassword';
-import { getDatabase, ref, onValue } from '@firebase/database';
 import RecordsScreen from './RecordsScreen';
 import TaskCalendarScreen from './TaskCalendarScreen';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import GoalSetting from './GoalSetting';
+import Onlinebanking from './Onlinebanking';
+import Investment from './Investment';
+import Rewards from './Rewards';
+
+
+
 
 const Stack = createStackNavigator();
 const firebaseConfig = {
@@ -52,7 +58,7 @@ const App = () => {
         onValue(fullnameRef, (snapshot) => {
           const fullname = snapshot.val();
           if (fullname) {
-            const [firstName, last] = fullname.split(' ');
+            const [firstName, lastName] = fullname.split(' ');
             setFirstName(firstName);
             setLastName(lastName);
           }
@@ -102,11 +108,14 @@ const App = () => {
       <Stack.Screen name="Records" component={RecordsScreen} />
       <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
       <Stack.Screen name="Profile" component={Userprofile} />
-      <Stack.Screen name="Goal" component={GoalSetting} />
+      <Stack.Screen name="Goal Setting" component={GoalSetting} />
+      <Stack.Screen name="Online Banking" component={Onlinebanking} />
+      <Stack.Screen name="Investment" component={Investment} />
+      <Stack.Screen name="Rewards" component={Rewards} />
     </>
   ) : (
     <Stack.Screen name="Auth" options={{ headerShown: false }}>
-      {() => <AuthScreen isLogin={true} />}
+      {() => <AuthScreen isLogin={true}/>}
     </Stack.Screen>
   )}
 </Stack.Navigator>

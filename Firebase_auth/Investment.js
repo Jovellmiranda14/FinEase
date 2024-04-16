@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 
-const TaskCalendarScreen = () => {
+const Investment = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>TaskCalendar Screen</Text>
+      <Text>Investment </Text>
     </View>
   );
 };
 
-export default TaskCalendarScreen; // Need ng ibang Name
+export default Investment; // Need ng ibang Name
