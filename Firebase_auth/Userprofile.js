@@ -144,9 +144,13 @@ const Userprofile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.profileDetails}>
-        <TouchableOpacity onPress={handleProfilePicturePress}>
-          {profilePicture && <Image source={{ uri: profilePicture }} style={styles.profilePicture} />}
-        </TouchableOpacity>
+      <TouchableOpacity onPress={handleProfilePicturePress}>
+  {profilePicture ? (
+    <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+  ) : (
+    <Image source={require('./assets/user-icon.png')} style={styles.profilePicture} />
+  )}
+</TouchableOpacity>
         <Text style={styles.sectionTitle}>User Profile Details</Text>
         <TextInput
           style={styles.input}

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, I
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
-
+import { getDownloadURL, ref as storageRef } from "firebase/storage";
 const HomeScreen = () => {
   const navigation = useNavigation(); // Use the useNavigation hook to get the navigation prop
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -13,7 +13,7 @@ const HomeScreen = () => {
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const [searchQuery, setSearchQuery] = useState('');
 const [filteredCards, setFilteredCards] = useState([]);
-
+const [profilePicture, setProfilePicture] = useState('');
 const cards = [
   { id: 2, name: 'Records' },
   { id: 3, name: 'TaskCalendar' },
@@ -102,8 +102,12 @@ const cards = [
         <Text style={styles.logo}>Logo</Text>
         {/* User Icon */}
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-        </TouchableOpacity>
+        {profilePicture ? (
+    <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+  ) : (
+    <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+  )}
+</TouchableOpacity>
       </View>
       {/* Search Bar */}
             <TextInput

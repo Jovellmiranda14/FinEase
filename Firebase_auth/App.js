@@ -58,7 +58,7 @@ const App = () => {
         onValue(fullnameRef, (snapshot) => {
           const fullname = snapshot.val();
           if (fullname) {
-            const [firstName, lastName] = fullname.split(' ');
+            const [firstName, lastName] = userData;
             setFirstName(firstName);
             setLastName(lastName);
           }
@@ -68,34 +68,6 @@ const App = () => {
     return () => unsubscribe();
   }, [auth]);
   
-  const handleAuthentication = async (email, password) => {
-    try {
-      if (email === '' && password === '') {
-        // If both email and password are empty, it means logout
-        console.log('User logged out successfully!');
-        await signOut(auth);
-        return; // Exit the function after logout
-      }
-      if (!email || !password) {
-        throw new Error('Please enter both email and password.');
-      }
-  
-      if (user) {
-        console.log('User logged out successfully!');
-        await signOut(auth);
-      } else {
-        if (isLogin) {
-          await signInWithEmailAndPassword(auth, email, password);
-          console.log('User signed in successfully!');
-        } else {
-          await createUserWithEmailAndPassword(auth, email, password);
-          console.log('User created successfully!');
-        }
-      }
-    } catch (error) {
-      console.error('Authentication error:', error);
-    }
-  };
 
   return (
 <NavigationContainer>
