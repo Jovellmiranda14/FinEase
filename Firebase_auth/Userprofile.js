@@ -82,14 +82,16 @@ const Userprofile = () => {
   // Function to handle password change
   const handleChangePassword = async () => {
     try {
-      const newPassword = 'yourNewPassword'; // Replace with the new password entered by the user
-      await updatePassword(auth.currentUser, newPassword);
-      console.log('Password changed successfully');
+      await sendPasswordResetEmail(auth, email);
+      setResetMessage('Password reset email sent. Please check your inbox.');
     } catch (error) {
-      console.error('Password change error:', error);
-      setErrorMessage('Failed to change password. Please try again.');
+      console.error('Error sending password reset email:', error.message);
+      setResetMessage('Failed to send password reset email. Please try again.');
     }
   };
+  
+
+
 
   useEffect(() => {
     // Fetch the profile picture URL when the component mounts
