@@ -1,0 +1,68 @@
+// import React from 'react';
+// import { View, Text, StyleSheet } from 'react-native';
+
+// const TaskCalendarScreen = () => {
+//   // Dummy data representing completed, ongoing, and failed activities over time
+//   const activities = [
+//     { status: 'completed', count: 5 },
+//     { status: 'ongoing', count: 3 },
+//     { status: 'failed', count: 2 },
+//   ];
+
+//   // Function to generate circles representing activities
+//   const renderActivities = () => {
+//     let circles = [];
+
+//     // Loop through activities data and create circles
+//     activities.forEach((activity, index) => {
+//       for (let i = 0; i < activity.count; i++) {
+//         circles.push(
+//           <View
+//             key={`${activity.status}_${i}`}
+//             style={[
+//               styles.circle,
+//               {
+//                 backgroundColor:
+//                   activity.status === 'completed'
+//                     ? '#00FF00'
+//                     : activity.status === 'ongoing'
+//                     ? '#FFFF00'
+//                     : '#FF0000',
+//               },
+//               { marginLeft: index * 20 } // Adjust spacing based on activity status
+//             ]}
+//           />
+//         );
+//       }
+//     });
+
+//     return circles;
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text>Task/Calendar Screen</Text>
+//       <View style={styles.chartContainer}>{renderActivities()}</View>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   chartContainer: {
+//     flexDirection: 'row',
+//     marginTop: 20,
+//   },
+//   circle: {
+//     width: 10,
+//     height: 10,
+//     borderRadius: 5,
+//     marginHorizontal: 2,
+//   },
+// });
+
+// export default TaskCalendarScreen;

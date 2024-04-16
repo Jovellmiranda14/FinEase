@@ -12,6 +12,7 @@ import RecordsScreen from './RecordsScreen';
 import TaskCalendarScreen from './TaskCalendarScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import GoalSetting from './GoalSetting';
 
 const Stack = createStackNavigator();
 const firebaseConfig = {
@@ -101,6 +102,7 @@ const App = () => {
       <Stack.Screen name="Records" component={RecordsScreen} />
       <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
       <Stack.Screen name="Profile" component={Userprofile} />
+      <Stack.Screen name="Goal" component={GoalSetting} />
     </>
   ) : (
     <Stack.Screen name="Auth" options={{ headerShown: false }}>

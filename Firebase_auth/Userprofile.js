@@ -1,101 +1,153 @@
+// Import the necessary modules
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
-import { getAuth } from '@firebase/auth';
-import { getDatabase, ref, get, update } from 'firebase/database';
-import * as ImagePicker from 'expo-image-picker'; // Import from expo-image-picker
-import { getStorage, ref as storageRef, uploadString, getDownloadURL } from 'firebase/storage';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image } from 'react-native';
+import { getAuth, updateProfile, updatePassword } from '@firebase/auth';
+import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
+import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
 
-const UserProfile = () => {
-  const [userProfile, setUserProfile] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
+// CustomButton component
+const CustomButton = ({ title, onPress }) => (
+  <TouchableOpacity onPress={onPress} style={styles.button}>
+    <Text style={styles.buttonText}>{title}</Text>
+  </TouchableOpacity>
+);
+
+// Userprofile component
+const Userprofile = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null); // State to store the profile picture
+  const [errorMessage, setErrorMessage] = useState('');
   const auth = getAuth();
-  const db = getDatabase();
+  const storage = getStorage();
 
-  useEffect(() => {
-    // Get the currently signed-in user
-    const user = auth.currentUser;
-    if (user) {
-      // Retrieve user profile from the database
-      const userRef = ref(db, 'users/' + user.uid);
-      get(userRef)
-        .then((snapshot) => {
-          if (snapshot.exists()) {
-            // If user profile exists, set it to state
-            setUserProfile(snapshot.val());
-            // If user profile includes profile image, set it to state
-            if (snapshot.val().profileImage) {
-              setProfileImage(snapshot.val().profileImage);
-            }
-          } else {
-            console.log('No data available');
-          }
-        })
-        .catch((error) => {
-          console.error('Error getting user profile:', error);
-        });
-    }
-  }, [auth, db]);
+  // Function to update user's profile
+  const handleUpdateProfile = async () => {
+    try {
+      const user = auth.currentUser;
 
-  const handleSelectImage = async () => {
-    // Open image picker to select or take a photo
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+      // Update user's profile with first name and last name
+      await updateProfile(user, { displayName: `${firstName} ${lastName}` });
 
-    if (!result.cancelled) {
-      // If image selection is not cancelled, upload the image
-      uploadImage(result.uri);
+      // Update user's email and phone number
+      await user.updateEmail(email);
+      await user.updatePhoneNumber(phoneNumber);
+
+      console.log('User profile updated successfully:', user.displayName);
+    } catch (error) {
+      console.error('Profile update error:', error);
+      setErrorMessage('Failed to update profile. Please try again.');
     }
   };
 
-  const uploadImage = async (uri) => {
+  // Function to handle picture upload
+  const handleUploadPicture = async () => {
     try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        throw new Error('Permission to access media library not granted');
+      }
 
-      const storage = getStorage();
-      const imageRef = storageRef(storage, 'profile_images/' + auth.currentUser.uid);
-      
-      // Upload image to Firebase Storage
-      await uploadString(imageRef, blob, 'data_url');
-
-      // Get download URL of the uploaded image
-      const downloadURL = await getDownloadURL(imageRef);
-      
-      // Save download URL to user profile in the database
-      const user = auth.currentUser;
-      const userRef = ref(db, 'users/' + user.uid);
-      await update(userRef, {
-        profileImage: downloadURL
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
       });
 
-      // Update state with the download URL
-      setProfileImage(downloadURL);
+      if (result.canceled) {
+        console.log('Image upload cancelled');
+        return;
+      }
+
+      const selectedImageFile = result.assets[0].uri;
+      const storageReference = storageRef(storage, `profile-pictures/${auth.currentUser.uid}/profile-picture.jpg`);
+
+      const response = await fetch(selectedImageFile);
+      const blob = await response.blob();
+      await uploadBytes(storageReference, blob);
+
+      const downloadURL = await getDownloadURL(storageReference);
+      setProfilePicture(downloadURL);
+
+      console.log('Image uploaded successfully:', downloadURL);
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error('Image upload error:', error);
+      setErrorMessage('Failed to upload profile picture. Please try again.');
     }
   };
+
+  // Function to handle password change
+  const handleChangePassword = async () => {
+    try {
+      const newPassword = 'yourNewPassword'; // Replace with the new password entered by the user
+      await updatePassword(auth.currentUser, newPassword);
+      console.log('Password changed successfully');
+    } catch (error) {
+      console.error('Password change error:', error);
+      setErrorMessage('Failed to change password. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    // Fetch the profile picture URL when the component mounts
+    const fetchProfilePictureURL = async () => {
+      try {
+        const storageReference = storageRef(storage, `profile-pictures/${auth.currentUser.uid}/profile-picture.jpg`);
+        const downloadURL = await getDownloadURL(storageReference);
+        setProfilePicture(downloadURL);
+      } catch (error) {
+        console.error('Error fetching profile picture:', error);
+      }
+    };
+
+    fetchProfilePictureURL();
+  }, []); // Empty dependency array to ensure this effect runs only once on mount
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>User Profile</Text>
-      {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}
-      {userProfile && (
-        <View style={styles.profile}>
-          <Text>Email: {userProfile.email}</Text>
-          <Text>First Name: {userProfile.firstName}</Text>
-          <Text>Last Name: {userProfile.lastName}</Text>
-          <Text>Phone Number: {userProfile.phoneNumber || 'N/A'}</Text>
-        </View>
-      )}
-      <Button title="Select Profile Picture" onPress={handleSelectImage} />
+      <View style={styles.profileDetails}>
+        {profilePicture && <Image source={{ uri: profilePicture }} style={styles.profilePicture} />}
+        <Text style={styles.sectionTitle}>User Profile Details</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          value={firstName}
+          onChangeText={setFirstName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          value={lastName}
+          onChangeText={setLastName}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email Address"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number (Optional)"
+          value={phoneNumber}
+          onChangeText={setPhoneNumber}
+          keyboardType="numeric"
+        />
+        <TouchableOpacity onPress={handleUploadPicture}>
+          <Text style={styles.link}>Upload Profile Picture</Text>
+        </TouchableOpacity>
+        <CustomButton title="Save Profile" onPress={handleUpdateProfile} />
+        <CustomButton title="Change Password" onPress={handleChangePassword} />
+      </View>
+      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
     </View>
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -103,24 +155,58 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  title: {
-    fontSize: 24,
+  sectionTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  profile: {
+  input: {
+    height: 40,
+    width: '100%',
     borderWidth: 1,
-    borderColor: 'gray',
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 20,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
   },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+  button: {
+    marginTop: 20,
+    borderRadius: 15,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'white',
+    width: '70%',
+    height: 40,
+    backgroundColor: '#492FAA',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'normal',
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+    marginBottom: 10,
+  },
+  errorMessage: {
+    color: 'red',
+    marginTop: 10,
+  },
+  profileDetails: {
     marginBottom: 20,
+    width: '100%',
+    alignItems: 'center',
+  },
+  profilePicture: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginTop: 10,
   },
 });
 
-export default UserProfile;
+export default Userprofile;

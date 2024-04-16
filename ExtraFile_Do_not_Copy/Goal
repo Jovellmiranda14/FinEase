@@ -1,0 +1,140 @@
+// import React, { useState } from 'react';
+// import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+// import { Picker } from '@react-native-picker/picker';
+
+// const GoalSettingScreen = () => {
+//   // State variables to store goal details
+//   const [goal, setGoal] = useState('');
+//   const [category, setCategory] = useState('');
+//   const [status, setStatus] = useState('');
+//   const [description, setDescription] = useState('');
+//   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+
+//   // Options for seminar dropdown
+//   const seminarOptions = ['Marketing', 'Finance', 'Leadership', 'Technology', 'Other Seminar'];
+
+//   // Function to handle goal submission
+//   const handleGoalSubmit = () => {
+//     // Here you can implement the logic to store the goal details
+//     console.log('Goal:', goal);
+//     console.log('Category:', category);
+//     console.log('Status:', status);
+//     console.log('Description:', description);
+//     // Clear input fields after submission
+//     clearFields();
+//   };
+
+//   // Function to clear input fields
+//   const clearFields = () => {
+//     setGoal('');
+//     setCategory('');
+//     setStatus('');
+//     setDescription('');
+//     setShowCategoryPicker(false);
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.title}>Set Your Goal</Text>
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Enter your goal"
+//         value={goal}
+//         onChangeText={text => setGoal(text)}
+//         onFocus={() => setShowCategoryPicker(true)} // Show category picker when the input is focused
+//       />
+//       {showCategoryPicker && (
+//         <Picker
+//           selectedValue={category}
+//           onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}
+//           style={styles.picker}
+//         >
+//           <Picker.Item label="Select category" value="" />
+//           <Picker.Item label="Personal" value="Personal" />
+//           <Picker.Item label="Work" value="Work" />
+//           <Picker.Item label="Education" value="Education" />
+//           <Picker.Item label="Others" value="Others" />
+//         </Picker>
+//       )}
+//       {category === 'Work' && (
+//         <Picker
+//           selectedValue={status}
+//           onValueChange={(itemValue, itemIndex) => setStatus(itemValue)}
+//           style={styles.picker}
+//         >
+//           {seminarOptions.map((option, index) => (
+//             <Picker.Item key={index} label={option} value={option} />
+//           ))}
+//         </Picker>
+//       )}
+//       <View style={styles.radioContainer}>
+//         <Text>Status:</Text>
+//         <View style={styles.radioGroup}>
+//           <Button
+//             title="Complete"
+//             onPress={() => setStatus('complete')}
+//             color={status === 'complete' ? 'green' : 'gray'}
+//           />
+//           <Button
+//             title="Ongoing"
+//             onPress={() => setStatus('ongoing')}
+//             color={status === 'ongoing' ? 'orange' : 'gray'}
+//           />
+//           <Button
+//             title="Failed"
+//             onPress={() => setStatus('failed')}
+//             color={status === 'failed' ? 'red' : 'gray'}
+//           />
+//         </View>
+//       </View>
+//       <TextInput
+//         style={[styles.input, { height: 100 }]}
+//         placeholder="Enter description (optional)"
+//         multiline
+//         value={description}
+//         onChangeText={text => setDescription(text)}
+//       />
+//       <Button title="Set Goal" onPress={handleGoalSubmit} />
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     padding: 20,
+//   },
+//   title: {
+//     fontSize: 24,
+//     fontWeight: 'bold',
+//     marginBottom: 20,
+//   },
+//   input: {
+//     width: '100%',
+//     height: 40,
+//     borderColor: 'gray',
+//     borderWidth: 1,
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     marginBottom: 20,
+//   },
+//   picker: {
+//     width: '100%',
+//     height: 40,
+//     marginBottom: 20,
+//   },
+//   radioContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   radioGroup: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     marginTop: 5,
+//   },
+// });
+
+// export default GoalSettingScreen;
