@@ -22,16 +22,20 @@ const ForgotPassword = ({ onBackToLogin }) => {
         setResetMessage('This email is not registered. Please enter a valid email.');
         return;
       }
-
+  
       // Email is registered, send the reset email
       await sendPasswordResetEmail(auth, email);
       setResetMessage('Password reset email sent. Please check your inbox.');
+  
+      // Set a timer to clear the reset message after a minute
+      setTimeout(() => {
+        setResetMessage('');
+      }, 60000); // 1 minute in milliseconds
     } catch (error) {
       console.error('Error sending password reset email:', error.message);
-      setResetMessage('Failed to send password reset email. Please try again.');
+      setResetMessage('Failed to send password reset email. Please try again later.');
     }
   };
-
   return (
     <View style={styles.container}>
       <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>

@@ -1,7 +1,7 @@
 // Import the necessary modules
 import React, { useState, useEffect } from 'react';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image } from 'react-native';
-import { getAuth, updateProfile, updatePassword } from '@firebase/auth';
+import { getAuth, updateProfile, updatePassword, sendPasswordResetEmail } from '@firebase/auth';
 import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
 
@@ -20,6 +20,7 @@ const Userprofile = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState(null); // State to store the profile picture
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const auth = getAuth();
   const storage = getStorage();
 
@@ -32,8 +33,12 @@ const Userprofile = () => {
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
 
       // Update user's email and phone number
-      await user.updateEmail(email);
-      await user.updatePhoneNumber(phoneNumber);
+      if (email !== '') {
+        await user.updateEmail(email);
+      }
+      if (phoneNumber !== '') {
+        await user.updatePhoneNumber(phoneNumber);
+      }
 
       console.log('User profile updated successfully:', user.displayName);
     } catch (error) {
@@ -51,7 +56,7 @@ const Userprofile = () => {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
@@ -82,16 +87,44 @@ const Userprofile = () => {
   // Function to handle password change
   const handleChangePassword = async () => {
     try {
-      await sendPasswordResetEmail(auth, email);
-      setResetMessage('Password reset email sent. Please check your inbox.');
+      const user = auth.currentUser;
+  
+      // Send password reset email to the user's email address
+      await sendPasswordResetEmail(auth, user.email);
+  
+      setSuccessMessage('Password reset email sent. Please check your inbox.');
+  
+      // Set a timeout to clear the success message after a certain period (e.g., 1 minute)
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 60000); // 1 minute in milliseconds
+  
+      // Clear any existing error message
+      setErrorMessage('');
     } catch (error) {
       console.error('Error sending password reset email:', error.message);
-      setResetMessage('Failed to send password reset email. Please try again.');
+      if (error.code === 'auth/too-many-requests') {
+        setErrorMessage('Too many requests. Please wait for one minute before trying again.');
+  
+        // Set a timeout to clear the error message after a certain period (e.g., 1 minute)
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 60000); // 1 minute in milliseconds
+      } else {
+        setErrorMessage('Failed to send password reset email. Please try again later.');
+      }
+      // Clear any existing success message
+      setSuccessMessage('');
     }
   };
   
-
-
+  
+  
+  // Function to handle profile picture press
+  const handleProfilePicturePress = async () => {
+    // Open the image picker when the profile picture is pressed
+    handleUploadPicture();
+  };
 
   useEffect(() => {
     // Fetch the profile picture URL when the component mounts
@@ -111,7 +144,9 @@ const Userprofile = () => {
   return (
     <View style={styles.container}>
       <View style={styles.profileDetails}>
-        {profilePicture && <Image source={{ uri: profilePicture }} style={styles.profilePicture} />}
+        <TouchableOpacity onPress={handleProfilePicturePress}>
+          {profilePicture && <Image source={{ uri: profilePicture }} style={styles.profilePicture} />}
+        </TouchableOpacity>
         <Text style={styles.sectionTitle}>User Profile Details</Text>
         <TextInput
           style={styles.input}
@@ -138,10 +173,8 @@ const Userprofile = () => {
           onChangeText={setPhoneNumber}
           keyboardType="numeric"
         />
-        <TouchableOpacity onPress={handleUploadPicture}>
-          <Text style={styles.link}>Upload Profile Picture</Text>
-        </TouchableOpacity>
         <CustomButton title="Save Profile" onPress={handleUpdateProfile} />
+        {successMessage ? <Text style={styles.successMessage}>{successMessage}</Text> : null}
         <CustomButton title="Change Password" onPress={handleChangePassword} />
       </View>
       {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
