@@ -11,10 +11,22 @@ const HomeScreen = () => {
   const [lastName, setLastName] = useState(null);
   const [user, setUser] = useState(null);
   const slideAnim = useRef(new Animated.Value(-300)).current;
-  
+  const [searchQuery, setSearchQuery] = useState('');
+const [filteredCards, setFilteredCards] = useState([]);
+
+const cards = [
+  { id: 2, name: 'Records' },
+  { id: 3, name: 'Task/Calendar' },
+  { id: 4, name: 'Online Banking' },
+  { id: 5, name: 'Rewards' },
+  { id: 6, name: 'Goal Setting' },
+  { id: 7, name: 'Investment' },
+];
+
   const database = getDatabase();
   const auth = getAuth();
   useEffect(() => {
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
@@ -31,6 +43,22 @@ const HomeScreen = () => {
     });
     return () => unsubscribe();
   }, [auth]);
+
+
+  // Sort
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      // If the search query is blank, show all cards
+      setFilteredCards(cards);
+    } else {
+      // If there's a search query, filter the cards based on the query
+      const filteredCard = cards.filter(card =>
+        card.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredCards(filteredCard);
+    }
+  }, [searchQuery]);
+
 
   const handleAuthentication = async () => {
     try {
@@ -78,54 +106,72 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </View>
       {/* Search Bar */}
-      <TextInput
+            <TextInput
         placeholder="Search"
         style={styles.searchBar}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
       />
-      <View style={styles.cardsContainer}>
-        {/* Clickable Cards */}
-        <TouchableOpacity
-          style={[styles.card, styles.doubleCard]}
-        >
-          <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('Records')}
-        >
-          <Text>Records</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('TaskCalendar')}
-        >
-          <Text>Task/Calendar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('OnlineBanking')}
-        >
-          <Text>Online Banking</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('Rewards')}
-        >
-          <Text>Rewards</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('GoalSetting')}
-        >
-          <Text>Goal Setting</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.card, styles.normalCard]}
-          onPress={() => navigation.navigate('Investment')}
-        >
-          <Text>Investment</Text>
-        </TouchableOpacity>
-      </View>
+
+<View style={styles.cardsContainer}>
+  {/* Clickable Cards */}
+  <TouchableOpacity
+    style={[styles.card, styles.doubleCard]}
+  >
+    <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
+  </TouchableOpacity>
+  {/* Filtered Cards */}
+  {filteredCards.length > 0 ? (
+    filteredCards.map(card => (
+      <TouchableOpacity
+        key={card.id}
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate(card.name)}
+      >
+        <Text>{card.name}</Text>
+      </TouchableOpacity>
+    ))
+  ) : (
+    <>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('Records')}
+      >
+        <Text>Records</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('TaskCalendar')}
+      >
+        <Text>Task/Calendar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('OnlineBanking')}
+      >
+        <Text>Online Banking</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('Rewards')}
+      >
+        <Text>Rewards</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('GoalSetting')}
+      >
+        <Text>Goal Setting</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate('Investment')}
+      >
+        <Text>Investment</Text>
+      </TouchableOpacity>
+    </>
+  )}
+</View>
       {/* Sidebar */}
       <Modal
         animationType="none"
@@ -135,7 +181,7 @@ const HomeScreen = () => {
 
         <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-            <Text style={styles.closeButtonText}>≤</Text>
+            <Text style={styles.closeButton}>≤</Text>
           </TouchableOpacity>
           <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
           <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
