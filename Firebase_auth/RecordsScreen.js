@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RecordsScreen = () => {
   const [money, setMoney] = useState('');
@@ -78,6 +79,7 @@ const RecordsScreen = () => {
   };
 
   useEffect(() => {
+    
     // Calculate initial total money based on records
     const initialTotal = records.reduce((acc, record) => {
       if (record.category === 'Income') {
