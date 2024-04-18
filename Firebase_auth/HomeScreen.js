@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground } from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { useNavigation } from '@react-navigation/native';
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 
 const HomeScreen = () => {
-  const navigation = useNavigation(); // Use the useNavigation hook to get the navigation prop
+  const navigation = useNavigation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
@@ -45,13 +45,10 @@ const HomeScreen = () => {
     return () => unsubscribe();
   }, [auth]);
 
-  // Sort
   useEffect(() => {
     if (searchQuery.trim() === '') {
-      // If the search query is blank, show all cards
       setFilteredCards(cards);
     } else {
-      // If there's a search query, filter the cards based on the query
       const filteredCard = cards.filter(card =>
         card.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -67,7 +64,7 @@ const HomeScreen = () => {
   
       console.log('User logged out successfully!');
       await signOut(auth);
-      setUser(null); // Clear the user state after logout
+      setUser(null);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -94,13 +91,10 @@ const HomeScreen = () => {
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.header}>
-          {/* Sidebar Button */}
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
           </TouchableOpacity>
-          {/* Logo */}
           <Text style={styles.logo}>Logo</Text>
-          {/* User Icon */}
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             {profilePicture ? (
               <Image source={{ uri: profilePicture }} style={styles.userIcon} />
@@ -109,7 +103,6 @@ const HomeScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-        {/* Search Bar */}
         <TextInput
           placeholder="Search"
           style={styles.searchBar}
@@ -118,13 +111,12 @@ const HomeScreen = () => {
         />
 
         <View style={styles.cardsContainer}>
-          {/* Clickable Cards */}
           <TouchableOpacity
             style={[styles.card, styles.doubleCard]}
           >
-            <Text style={styles.cardText}>Welcome to Finease! Goals for Today?</Text>
+            <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
+            <View style={styles.bottomBorderFill} />
           </TouchableOpacity>
-          {/* Filtered Cards */}
           {filteredCards.length > 0 ? (
             filteredCards.map(card => (
               <TouchableOpacity
@@ -132,7 +124,8 @@ const HomeScreen = () => {
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate(card.name)}
               >
-                <Text>{card.name}</Text>
+                <Text style={styles.cardText}>{card.name}</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
             ))
           ) : (
@@ -141,42 +134,47 @@ const HomeScreen = () => {
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('Records')}
               >
-                <Text>Records</Text>
+                <Text style={styles.cardText}>Records</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('TaskCalendar')}
               >
-                <Text>TaskCalendar</Text>
+                <Text style={styles.cardText}>TaskCalendar</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('OnlineBanking')}
               >
-                <Text>Online Banking</Text>
+                <Text style={styles.cardText}>Online Banking</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('Rewards')}
               >
-                <Text>Rewards</Text>
+                <Text style={styles.cardText}>Rewards</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('GoalSetting')}
               >
-                <Text>Goal Setting</Text>
+                <Text style={styles.cardText}>Goal Setting</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.card, styles.normalCard]}
                 onPress={() => navigation.navigate('Investment')}
               >
-                <Text>Investment</Text>
+                <Text style={styles.cardText}>Investment</Text>
+                <View style={styles.bottomBorderFill} />
               </TouchableOpacity>
             </>
           )}
         </View>
-        {/* Sidebar */}
         <Modal
           animationType="none"
           transparent={true}
@@ -190,7 +188,7 @@ const HomeScreen = () => {
             <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
             <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-              <Text>Records</Text>
+              <Text>TaskCalendar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
               <Text>TaskCalendar</Text>
@@ -207,7 +205,7 @@ const HomeScreen = () => {
             <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
               <Text>Investment</Text>
             </TouchableOpacity>
-            {user ? ( // Render logout button if user is logged in
+            {user ? (
               <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
             ) : null}
           </Animated.View>
@@ -250,25 +248,71 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
-    backgroundColor: 'white', // Set background color to white
+    backgroundColor: 'white',
   },
   card: {
     width: '48%',
     height: 150,
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'white',
+    marginBottom: 10,
+  },
+  normalCard: {
+    width: '48%',
+    height: 150,
+    backgroundColor: '#416ABC',
+    borderRadius: 10,
+    justifyContent: 'flex-end',
     alignItems: 'center',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'white',
     marginBottom: 10,
   },
   cardText: {
-    textAlign: 'center', // Center align text within the card
+    color: 'black',
+    textAlign: 'center',
+    position: 'absolute',
+    bottom: 10, // Adjust the bottom position
+    left: 0,
+    right: 0,
+    textShadowColor: 'white',
+    textShadowOffset: { width: 1, height: 1 },
+    zIndex: 1, // Set z-index to bring text above the border
+},
+  cardTextTop: {
+    bottom: 'auto',
+    top: 10,
+    zIndex: 1, // Add zIndex to bring text above the border
+  },
+  cardImage: {
+    width: '100%',
+    height: '70%',
+    resizeMode: 'cover',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  bottomBorderFill: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 30,
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   doubleCard: {
-    width: '100%', // Occupies the full width of the container
-  },
-  normalCard: {
-    width: '48%', // Occupies half of the container
+    width: '100%',
+    height: 150,
+    backgroundColor: '#416ABC',
+    borderRadius: 10,
+    marginBottom: 10,
+    position: 'relative',
   },
   sidebar: {
     position: 'absolute',
@@ -302,9 +346,8 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    marginRight: 10, 
+    marginRight: 10,
   },
 });
-
 
 export default HomeScreen;
