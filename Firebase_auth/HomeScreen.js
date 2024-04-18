@@ -348,6 +348,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginRight: 10,
   },
+//HEHE
 });
 
 export default HomeScreen;
