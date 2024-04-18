@@ -4,6 +4,17 @@ import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
+ 
+
+
+//Images
+import records from './assets/records.png';
+import tasks from './assets/tasks.png';
+import OnlineBanking from './assets/onlinebanking.png';
+import Rewards from './assets/rewards.png';
+import GoalSetting from './assets/goalsetting.png';
+import investment from './assets/investment.webp';
+
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -16,12 +27,12 @@ const HomeScreen = () => {
   const [filteredCards, setFilteredCards] = useState([]);
   const [profilePicture, setProfilePicture] = useState('');
   const cards = [
-    { id: 2, name: 'Records' },
-    { id: 3, name: 'TaskCalendar' },
-    { id: 4, name: 'Online Banking' },
-    { id: 5, name: 'Rewards' },
-    { id: 6, name: 'Goal Setting' },
-    { id: 7, name: 'Investment' },
+    { id: 2, name: 'Records' , image: records},
+    { id: 3, name: 'TaskCalendar', image: tasks },
+    { id: 4, name: 'Online Banking', image: OnlineBanking },
+    { id: 5, name: 'Rewards' , image: Rewards},
+    { id: 6, name: 'Goal Setting' , image: GoalSetting},
+    { id: 7, name: 'Investment', image: investment },
   ];
 
   const database = getDatabase();
@@ -110,71 +121,29 @@ const HomeScreen = () => {
           onChangeText={setSearchQuery}
         />
 
-        <View style={styles.cardsContainer}>
-          <TouchableOpacity
-            style={[styles.card, styles.doubleCard]}
-          >
-            <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
-            <View style={styles.bottomBorderFill} />
-          </TouchableOpacity>
-          {filteredCards.length > 0 ? (
-            filteredCards.map(card => (
-              <TouchableOpacity
-                key={card.id}
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate(card.name)}
-              >
-                <Text style={styles.cardText}>{card.name}</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-            ))
-          ) : (
-            <>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('Records')}
-              >
-                <Text style={styles.cardText}>Records</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('TaskCalendar')}
-              >
-                <Text style={styles.cardText}>TaskCalendar</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('OnlineBanking')}
-              >
-                <Text style={styles.cardText}>Online Banking</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('Rewards')}
-              >
-                <Text style={styles.cardText}>Rewards</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('GoalSetting')}
-              >
-                <Text style={styles.cardText}>Goal Setting</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate('Investment')}
-              >
-                <Text style={styles.cardText}>Investment</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+<View style={styles.cardsContainer}>
+  <TouchableOpacity
+    style={[styles.card, styles.doubleCard]}
+  >
+    <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
+    <View style={styles.bottomBorderFill} />
+  </TouchableOpacity>
+
+  {filteredCards.length > 0 ? (
+    filteredCards.map(card => (
+      <TouchableOpacity
+        key={card.id}
+        style={[styles.card, styles.normalCard]}
+        onPress={() => navigation.navigate(card.name)}
+      >
+        <Image source={card.image} style={styles.imageStyle} />
+        <Text style={styles.cardText}>{card.name}</Text>
+        <View style={styles.bottomBorderFill} />
+      </TouchableOpacity>
+    ))
+  ) : null}
+</View>
+
         <Modal
           animationType="none"
           transparent={true}
@@ -349,6 +318,10 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 //HEHE
+imageStyle: {
+    width: 100, // Specify the desired width
+    height: 100, // Specify the desired height
+  },
 });
 
 export default HomeScreen;
