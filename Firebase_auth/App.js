@@ -87,7 +87,7 @@ const App = () => {
     </>
   ) : (
     <Stack.Screen name="Auth" options={{ headerShown: false }}>
-{() => <HomeScreen/>}
+{() => <AuthScreen isLogin={true}/>}
     </Stack.Screen>
   )}
 </Stack.Navigator>

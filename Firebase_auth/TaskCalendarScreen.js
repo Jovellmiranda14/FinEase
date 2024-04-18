@@ -34,14 +34,14 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
         placeholder="Enter title"
         value={chartTitle}
       />
-      <Text>{chartDescription}</Text> {/* Display description */}
+      <Text>{chartDescription}</Text>
       <TextInput
         style={styles.input}
-        onChangeText={text => setChartDescription(text)} // Handle description input
+        onChangeText={text => setChartDescription(text)}
         placeholder="Enter description"
         value={chartDescription}
       />
-      <Button title="Delete" onPress={onDelete} /> {/* Delete button */}
+      <Button title="Delete" onPress={onDelete} />
     </View>
   );
 };
@@ -93,6 +93,10 @@ const App = () => {
     updatedCharts.splice(index, 1);
     setCharts(updatedCharts);
   };
+
+  const totalSeries = charts.reduce((acc, chart) => {
+    return chart.series.map((value, index) => (acc[index] || 0) + value);
+  }, []);
 
   // Filter charts based on selected month and day
   const filteredCharts = useMemo(() => {

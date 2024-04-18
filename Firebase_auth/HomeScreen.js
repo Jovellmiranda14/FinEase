@@ -4,15 +4,15 @@ import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
- 
+
 
 
 //Images
 import records from './assets/records.png';
 import tasks from './assets/tasks.png';
-import OnlineBanking from './assets/onlinebanking.png';
+import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
-import GoalSetting from './assets/goalsetting.png';
+import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp';
 
 
@@ -26,6 +26,8 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
   const [profilePicture, setProfilePicture] = useState('');
+
+
   const cards = [
     { id: 2, name: 'Records' , image: records},
     { id: 3, name: 'TaskCalendar', image: tasks },
@@ -97,7 +99,7 @@ const HomeScreen = () => {
       }).start();
     }
   };
-
+  
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -106,6 +108,8 @@ const HomeScreen = () => {
             <Text style={styles.sidebarButtonText}>≡</Text>
           </TouchableOpacity>
           <Text style={styles.logo}>Logo</Text>
+
+          
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             {profilePicture ? (
               <Image source={{ uri: profilePicture }} style={styles.userIcon} />
@@ -121,16 +125,16 @@ const HomeScreen = () => {
           onChangeText={setSearchQuery}
         />
 
-<View style={styles.cardsContainer}>
-  <TouchableOpacity
-    style={[styles.card, styles.doubleCard]}
-  >
-    <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
-    <View style={styles.bottomBorderFill} />
-  </TouchableOpacity>
+      <View style={styles.cardsContainer}>
+        <TouchableOpacity
+          style={[styles.card, styles.doubleCard]}
+        >
+          <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
+          <View style={styles.bottomBorderFill} />
+        </TouchableOpacity>
 
-  {filteredCards.length > 0 ? (
-    filteredCards.map(card => (
+    {filteredCards.length > 0 ? (
+      filteredCards.map(card => (
       <TouchableOpacity
         key={card.id}
         style={[styles.card, styles.normalCard]}
