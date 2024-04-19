@@ -209,11 +209,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   sidebarButtonText: {
-    fontSize: 20,
+    fontSize: 25,
+    color: 'white',
   },
   logo: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: 'white',
   },
   searchBar: {
     borderWidth: 1,

@@ -24,7 +24,7 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
         widthAndHeight={widthAndHeight}
         series={series}
         sliceColor={sliceColor}
-        coverRadius={0.3} // Adjust the coverRadius to make the donut smaller
+        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
         coverFill={'#FFF'}
       />
       <View style={styles.percentageLabelsContainer}>{renderPercentageLabels()}</View>
@@ -65,7 +65,7 @@ const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
         widthAndHeight={widthAndHeight}
         series={series}
         sliceColor={sliceColor}
-        coverRadius={0.3} // Adjust the coverRadius to make the donut smaller
+        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
         coverFill={'#FFF'}
       />
       <View style={styles.percentageLabelsContainer}>{renderPercentageLabels()}</View>
@@ -73,7 +73,7 @@ const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
   );
 };
 
-const App = () => {
+const TaskCalendar = () => {
   const [selectedMonth, setSelectedMonth] = useState('January');
   const [selectedDay, setSelectedDay] = useState('1');
   const [selectedYear, setSelectedYear] = useState('2024');
@@ -213,4 +213,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default TaskCalendar;
