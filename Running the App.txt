@@ -1,2 +1,0 @@
-cd firebase_auth
-npx expo start
