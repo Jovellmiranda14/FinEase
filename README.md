@@ -1,7 +1,7 @@
 # When Running the Application: 
 ### cd Firebase_auth
 ### npm install 
-### npx expo begins
+### npx expo start
 
 # Wish to use Android Studio to execute it?
 ### Launch the emulator.
