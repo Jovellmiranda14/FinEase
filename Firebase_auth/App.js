@@ -49,49 +49,53 @@ const App = () => {
   const [lastName, setLastName] = useState(null);
   
   const auth = getAuth(app);
-
+  
+  // Function to fetch user data when authentication state changes
+  const fetchUserData = (user) => {
+    setUser(user);
+    if (user) {
+      const userRef = ref(database, `users/${user.uid}`);
+      onValue(userRef, (snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+          // Extract and set user data
+          const { firstName, lastName } = userData;
+          setFirstName(firstName);
+          setLastName(lastName);
+        }
+      });
+    }
+  };
+  
+  // Subscribe to authentication state changes
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        const fullnameRef = ref(database, `users/${user.uid}/fullname`);
-        onValue(fullnameRef, (snapshot) => {
-          const fullname = snapshot.val();
-          if (fullname) {
-            const [firstName, lastName] = userData;
-            setFirstName(firstName);
-            setLastName(lastName);
-          }
-        });
-      }
-    });
+    const unsubscribe = onAuthStateChanged(auth, fetchUserData);
     return () => unsubscribe();
   }, [auth]);
-  
 
   return (
-<NavigationContainer>
-<Stack.Navigator initialRouteName={user ? "Home" : "Auth"}>
-  {user ? (
-    <>
-      <Stack.Screen name="Home" options={{ headerShown: false }}>
-        {() => <HomeScreen firstName={firstName} lastName={lastName} />}
-      </Stack.Screen>
-      <Stack.Screen name="Records" component={RecordsScreen} />
-      <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
-      <Stack.Screen name="Profile" component={Userprofile} />
-      <Stack.Screen name="Goal Setting" component={GoalSetting} />
-      <Stack.Screen name="Online Banking" component={Onlinebanking} />
-      <Stack.Screen name="Investment" component={Investment} />
-      <Stack.Screen name="Rewards" component={Rewards} />
-    </>
-  ) : (
-    <Stack.Screen name="Auth" options={{ headerShown: false }}>
-{() => <AuthScreen isLogin={true}/>}
-    </Stack.Screen>
-  )}
-</Stack.Navigator>
-</NavigationContainer>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName={user ? "Home" : "Auth"}>
+        {user ? (
+          <>
+            <Stack.Screen name="Home" options={{ headerShown: false }}>
+              {() => <HomeScreen firstName={firstName} lastName={lastName} />}
+            </Stack.Screen>
+            <Stack.Screen name="Records" component={RecordsScreen} />
+            <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
+            <Stack.Screen name="Profile" component={Userprofile} />
+            <Stack.Screen name="Goal Setting" component={GoalSetting} />
+            <Stack.Screen name="Online Banking" component={Onlinebanking} />
+            <Stack.Screen name="Investment" component={Investment} />
+            <Stack.Screen name="Rewards" component={Rewards} />
+          </>
+        ) : (
+          <Stack.Screen name="Auth" options={{ headerShown: false }}>
+            {() => <AuthScreen isLogin={true} />}
+          </Stack.Screen>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

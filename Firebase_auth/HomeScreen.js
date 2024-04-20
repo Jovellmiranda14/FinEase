@@ -14,7 +14,7 @@ import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp';
-
+import { useProfilePicture } from './Userprofile';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -25,7 +25,7 @@ const HomeScreen = () => {
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
-  const [profilePicture, setProfilePicture] = useState('');
+  const { profilePicture } = useProfilePicture();
 
 
   const cards = [

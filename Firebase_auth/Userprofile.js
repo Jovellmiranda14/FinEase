@@ -28,10 +28,10 @@ const Userprofile = () => {
   const handleUpdateProfile = async () => {
     try {
       const user = auth.currentUser;
-
+  
       // Update user's profile with first name and last name
       await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-
+  
       // Update user's email and phone number
       if (email !== '') {
         await user.updateEmail(email);
@@ -39,8 +39,17 @@ const Userprofile = () => {
       if (phoneNumber !== '') {
         await user.updatePhoneNumber(phoneNumber);
       }
-
+  
       console.log('User profile updated successfully:', user.displayName);
+  
+      // Update Firebase Realtime Database with the updated first and last name
+      const db = getDatabase();
+      const userRef = databaseRef(db, `users/${user.uid}`);
+      await set(userRef, {
+        firstName: firstName,
+        lastName: lastName,
+      });
+  
     } catch (error) {
       console.error('Profile update error:', error);
       setErrorMessage('Failed to update profile. Please try again.');
