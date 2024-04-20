@@ -3,18 +3,15 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, I
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
-import { getDownloadURL, ref as storageRef } from "firebase/storage";
+import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 
-
-
-//Images
+// Images
 import records from './assets/records.png';
 import tasks from './assets/tasks.png';
 import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp';
-import { useProfilePicture } from './Userprofile';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -25,8 +22,7 @@ const HomeScreen = () => {
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
-  const { profilePicture } = useProfilePicture();
-
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const cards = [
     { id: 2, name: 'Records' , image: records},
@@ -38,9 +34,9 @@ const HomeScreen = () => {
   ];
 
   const database = getDatabase();
-  const auth = getAuth();
 
   useEffect(() => {
+    const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       if (user) {
@@ -53,10 +49,15 @@ const HomeScreen = () => {
             setLastName(lastName);
           }
         });
+        // Fetch profile picture URL when user is logged in
+        fetchUserProfile(user.uid, setProfilePicture);
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
       }
     });
     return () => unsubscribe();
-  }, [auth]);
+  }, [database]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -71,10 +72,12 @@ const HomeScreen = () => {
 
   const handleAuthentication = async () => {
     try {
+      const auth = getAuth();
+      const user = auth.currentUser;
       if (!user) {
         throw new Error('User not logged in.');
       }
-  
+
       console.log('User logged out successfully!');
       await signOut(auth);
       setUser(null);
@@ -99,7 +102,19 @@ const HomeScreen = () => {
       }).start();
     }
   };
-  
+
+  const fetchUserProfile = async (uid, setProfilePicture) => {
+    try {
+      const storage = getStorage();
+      const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
+      const url = await getDownloadURL(profilePictureRef);
+      setProfilePicture(url);
+    } catch (error) {
+      console.error('Error fetching profile picture:', error);
+      setProfilePicture(null); // Reset profile picture if fetch fails
+    }
+  };
+
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -109,13 +124,12 @@ const HomeScreen = () => {
           </TouchableOpacity>
           <Text style={styles.logo}>Logo</Text>
 
-          
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            {profilePicture ? (
-              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-            ) : (
-              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-            )}
+          {profilePicture ? (
+            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+          ) : (
+            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+          )}
           </TouchableOpacity>
         </View>
         <TextInput
@@ -125,28 +139,28 @@ const HomeScreen = () => {
           onChangeText={setSearchQuery}
         />
 
-      <View style={styles.cardsContainer}>
-        <TouchableOpacity
-          style={[styles.card, styles.doubleCard]}
-        >
-          <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
-          <View style={styles.bottomBorderFill} />
-        </TouchableOpacity>
+        <View style={styles.cardsContainer}>
+          <TouchableOpacity
+            style={[styles.card, styles.doubleCard]}
+          >
+            <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
+            <View style={styles.bottomBorderFill} />
+          </TouchableOpacity>
 
-    {filteredCards.length > 0 ? (
-      filteredCards.map(card => (
-      <TouchableOpacity
-        key={card.id}
-        style={[styles.card, styles.normalCard]}
-        onPress={() => navigation.navigate(card.name)}
-      >
-        <Image source={card.image} style={styles.imageStyle} />
-        <Text style={styles.cardText}>{card.name}</Text>
-        <View style={styles.bottomBorderFill} />
-      </TouchableOpacity>
-    ))
-  ) : null}
-</View>
+          {filteredCards.length > 0 ? (
+            filteredCards.map(card => (
+              <TouchableOpacity
+                key={card.id}
+                style={[styles.card, styles.normalCard]}
+                onPress={() => navigation.navigate(card.name)}
+              >
+                <Image source={card.image} style={styles.imageStyle} />
+                <Text style={styles.cardText}>{card.name}</Text>
+                <View style={styles.bottomBorderFill} />
+              </TouchableOpacity>
+            ))
+          ) : null}
+        </View>
 
         <Modal
           animationType="none"
@@ -158,7 +172,11 @@ const HomeScreen = () => {
             <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
               <Text style={styles.closeButton}>≤</Text>
             </TouchableOpacity>
+            {profilePicture ? (
+            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+          ) : (
             <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+          )}
             <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
               <Text>TaskCalendar</Text>
@@ -182,7 +200,6 @@ const HomeScreen = () => {
               <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
             ) : null}
           </Animated.View>
-
         </Modal>
       </View>
     </ImageBackground>
@@ -323,8 +340,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginRight: 10,
   },
-//HEHE
-imageStyle: {
+  // HEHE
+  imageStyle: {
     width: 100, // Specify the desired width
     height: 100, // Specify the desired height
   },
