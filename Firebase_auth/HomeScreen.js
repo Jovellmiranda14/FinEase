@@ -178,8 +178,11 @@ const HomeScreen = () => {
             <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
           )}
             <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+            <Text>Home</Text>
+          </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-              <Text>TaskCalendar</Text>
+              <Text>Records</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
               <Text>TaskCalendar</Text>
@@ -345,6 +348,7 @@ const styles = StyleSheet.create({
     width: 100, // Specify the desired width
     height: 100, // Specify the desired height
   },
+  
 });
 
 export default HomeScreen;

@@ -82,13 +82,13 @@ const App = () => {
             <Stack.Screen name="Home" options={{ headerShown: false }}>
               {() => <HomeScreen firstName={firstName} lastName={lastName} />}
             </Stack.Screen>
-            <Stack.Screen name="Records" component={RecordsScreen} />
+            <Stack.Screen name="Records" component={RecordsScreen}options={{ headerShown: false }} />
             <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
             <Stack.Screen name="Profile" component={Userprofile} />
             <Stack.Screen name="Goal Setting" component={GoalSetting} />
             <Stack.Screen name="Online Banking" component={Onlinebanking} />
             <Stack.Screen name="Investment" component={Investment} />
-            <Stack.Screen name="Rewards" component={Rewards} />
+            <Stack.Screen name="Rewards" component={Rewards}/>
           </>
         ) : (
           <Stack.Screen name="Auth" options={{ headerShown: false }}>
