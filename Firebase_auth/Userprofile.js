@@ -128,7 +128,34 @@ const Userprofile = () => {
   };
   
   
-  
+  const database = getDatabase();
+
+useEffect(() => {
+  const auth = getAuth();
+  const unsubscribe = onAuthStateChanged(auth, (user) => {
+    setUser(user);
+    if (user) {
+      const userRef = ref(database, `users/${user.uid}`);
+      onValue(userRef, (snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+          const { firstName, lastName } = userData;
+          setFirstName(firstName);
+          setLastName(lastName);
+        }
+      });
+    } else {
+      // Clear profile-related states when user is logged out
+      setFirstName('');
+      setLastName('');
+    }
+  });
+  return () => unsubscribe();
+}, [database]);
+
+
+
+
   // Function to handle profile picture press
   const handleProfilePicturePress = async () => {
     // Open the image picker when the profile picture is pressed
