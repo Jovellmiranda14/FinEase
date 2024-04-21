@@ -16,8 +16,8 @@ import GoalSetting from './GoalSetting';
 import Onlinebanking from './Onlinebanking';
 import Investment from './Investment';
 import Rewards from './Rewards';
-
-
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Stack = createStackNavigator();
@@ -33,7 +33,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
-
+const auth = getAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage)
+});
 const AuthScreen = ({ isLogin }) => {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -48,8 +50,7 @@ const App = () => {
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
   
-  const auth = getAuth(app);
-  
+
   // Function to fetch user data when authentication state changes
   const fetchUserData = (user) => {
     setUser(user);

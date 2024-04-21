@@ -80,10 +80,14 @@ const TaskCalendar = () => {
   const [charts, setCharts] = useState([
     { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], title: 'Chart 1', description: 'Description for Chart 1' }
   ]);
-
+  const generateRandomSeries = () => {
+    // Generate random numbers for the series
+    const randomSeries = Array.from({ length: 2 }, () => Math.floor(Math.random() * 100));
+    return randomSeries;
+  };
   const handleUpdateChart = () => {
     // For demonstration, let's assume new series values are retrieved from elsewhere
-    const newSeries = [75, 100];
+    const newSeries = generateRandomSeries();
     const newSliceColor = ['#000000', '#FFFFFF']; // Two colors for demonstration
     setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }]);
   };
