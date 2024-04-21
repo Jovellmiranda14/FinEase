@@ -161,6 +161,11 @@ const Userprofile = () => {
   )}
 </TouchableOpacity>
         <Text style={styles.sectionTitle}>User Profile Details</Text>
+        <Text>Want to Update your Detials?</Text>
+  <Text style={styles.detailText}>First Name: {firstName}</Text>
+  <Text style={styles.detailText}>Last Name: {lastName}</Text>
+  <Text style={styles.detailText}>Email Address: {email}</Text>
+  <Text style={styles.detailText}>Phone Number: {phoneNumber}</Text>
         <TextInput
           style={styles.input}
           placeholder="First Name"
