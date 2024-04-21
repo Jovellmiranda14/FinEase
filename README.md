@@ -1,4 +1,5 @@
-# When Running the Application: 
+# When Running the Application:
+### cd Backend-Firebase-FinEase
 ### cd Firebase_auth
 ### npm install 
 ### npx expo start
