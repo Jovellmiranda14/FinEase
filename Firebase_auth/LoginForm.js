@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Text, TextInput, Button, View, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from Expo icons library
 import ForgotPassword from './ForgotPassword';
 import SignUpForm from './SignUpForm';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
@@ -10,7 +9,6 @@ const CustomButton = ({ title, onPress }) => (
     <Text style={styles.buttonText}>{title}</Text>
   </TouchableOpacity>
 );
-
 const MAX_LOGIN_ATTEMPTS = 3;
 
 const LoginForm = () => {
@@ -20,10 +18,7 @@ const LoginForm = () => {
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-
   const auth = getAuth();
-
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -33,17 +28,13 @@ const LoginForm = () => {
       console.error('Login error:', error);
       setErrorMessage('Invalid email or password.');
       setLoginAttempts(loginAttempts + 1);
-      setPassword('');
+      setPassword(''); // Reset password field
       if (loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
-        setShowForgotPassword(true);
+        setShowForgotPassword(true); // Redirect to forgot password screen after max attempts
       }
     }
   };
   
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
   const handleRegisterNow = () => {
     setShowSignUpForm(true);
   };
@@ -64,45 +55,44 @@ const LoginForm = () => {
         <ForgotPassword onBackToLogin={handleBackToLogin} />
       ) : (
         <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
-          <View style={styles.content}>
-            <TextInput
-              style={styles.emailInput}
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-            />
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
-                <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color="white" />
-              </TouchableOpacity>
-            </View>
-            
-            <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password</Text>
-            </TouchableOpacity>
+        <View style={styles.content}>
+          <TextInput
+          style={styles.emailInput}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+          />
+          <TextInput
+          style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
-            {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+          <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
+            <Text style={styles.forgotPasswordText}>Forgot Password</Text>
+          </TouchableOpacity>
 
-            <CustomButton title="Login" onPress={handleLogin} />
 
-            <TouchableOpacity onPress={handleRegisterNow}>
-              <Text style={styles.registerNow}>No Account? Register Now!</Text>
-            </TouchableOpacity>
-          </View>
+          {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+
+          <CustomButton title="Login" onPress={handleLogin} />
+
+
+          <TouchableOpacity onPress= {handleRegisterNow}>
+             <Text style={styles.registerNow}>No Account? Register Now!</Text>
+          </TouchableOpacity>
+        </View>
         </ImageBackground>  
       )}
+      
     </View>
+    
   );
+  
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -131,10 +121,6 @@ const styles = StyleSheet.create({
     width: '115%',
     height: '8%',
   },
-  passwordContainer: {
-    flexDirection: 'row', // Align icon and password input horizontally
-    alignItems: 'center', // Center items vertically
-  },
   passwordInput: {
     backgroundColor: 'white',
     borderWidth: 1,
@@ -142,14 +128,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     marginBottom: 10,
-    width: '100%', // Take remaining width
+    width: '115%',
     height: '8%',
-  },
-  eyeIcon: {
-    position: 'absolute', // Position the eye icon
-    right: 10, // Adjust the position from right
-    top: '50%', // Vertically center the icon
-    transform: [{ translateY: -12 }], // Adjust the position vertically
   },
   forgotPassword: {
     alignSelf: 'flex-end',
@@ -186,5 +166,6 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
   },
 });
+
 
 export default LoginForm;
