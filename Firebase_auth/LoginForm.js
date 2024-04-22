@@ -19,7 +19,6 @@ const LoginForm = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
   const auth = getAuth();
-
   const handleLogin = async () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -29,12 +28,13 @@ const LoginForm = () => {
       console.error('Login error:', error);
       setErrorMessage('Invalid email or password.');
       setLoginAttempts(loginAttempts + 1);
+      setPassword(''); // Reset password field
       if (loginAttempts + 1 >= MAX_LOGIN_ATTEMPTS) {
         setShowForgotPassword(true); // Redirect to forgot password screen after max attempts
       }
     }
   };
-
+  
   const handleRegisterNow = () => {
     setShowSignUpForm(true);
   };
