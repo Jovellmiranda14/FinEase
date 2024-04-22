@@ -4,6 +4,7 @@ import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Images
 import records from './assets/records.png';
@@ -166,43 +167,58 @@ const HomeScreen = () => {
           animationType="none"
           transparent={true}
           visible={isSidebarOpen}
-          onRequestClose={toggleSidebar}>
-
-          <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
+          onRequestClose={toggleSidebar}
+        >
+          <LinearGradient
+            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']} // Set the gradient colors with opacity
+            style={[styles.sidebar, { left: slideAnim }]}
+          >
             <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
               <Text style={styles.closeButton}>≤</Text>
             </TouchableOpacity>
             {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-          )}
+              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+            )}
             <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
-            <Text>Home</Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+              <Text>Home</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-              <Text>Records</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Records</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
-              <Text>TaskCalendar</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>TaskCalendar</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
-              <Text>Online Banking</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Online Banking</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
-              <Text>Rewards</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Rewards</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('GoalSetting')} style={styles.sidebarItem}>
-              <Text>Goal Setting</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Goal Setting</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
-              <Text>Investment</Text>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Investment</Text>
+              </View>
             </TouchableOpacity>
             {user ? (
               <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
             ) : null}
-          </Animated.View>
+          </LinearGradient>
         </Modal>
       </View>
     </ImageBackground>
@@ -278,7 +294,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'white',
     textShadowOffset: { width: 1, height: 1 },
     zIndex: 1, // Set z-index to bring text above the border
-},
+  },
   cardTextTop: {
     bottom: 'auto',
     top: 10,
@@ -343,12 +359,25 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginRight: 10,
   },
-  // HEHE
   imageStyle: {
     width: 100, // Specify the desired width
     height: 100, // Specify the desired height
   },
-  
+  buttonContainer: {
+    width: '80%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: 'transparent',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
 });
 
 export default HomeScreen;
