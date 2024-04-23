@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Image, Button, ImageBackground } from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
-import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Images
@@ -12,25 +11,23 @@ import tasks from './assets/tasks.png';
 import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
-import investment from './assets/investment.webp';
+import investment from './assets/investment.webp'; 
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [user, setUser] = useState(null);
-  const slideAnim = useRef(new Animated.Value(-300)).current;
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
-  const [profilePicture, setProfilePicture] = useState(null);
 
   const cards = [
-    { id: 2, name: 'Records' , image: records},
+    { id: 2, name: 'Records', image: records },
     { id: 3, name: 'TaskCalendar', image: tasks },
     { id: 4, name: 'Online Banking', image: OnlineBanking },
-    { id: 5, name: 'Rewards' , image: Rewards},
-    { id: 6, name: 'Goal Setting' , image: GoalSetting},
+    { id: 5, name: 'Rewards', image: Rewards },
+    { id: 6, name: 'Goal Setting', image: GoalSetting },
     { id: 7, name: 'Investment', image: investment },
   ];
 
@@ -46,15 +43,10 @@ const HomeScreen = () => {
           const userData = snapshot.val();
           if (userData) {
             const { firstName, lastName } = userData;
-            setFirstName(firstName);
-            setLastName(lastName);
+            setFirstName(firstName || '');
+            setLastName(lastName || '');
           }
         });
-        // Fetch profile picture URL when user is logged in
-        fetchUserProfile(user.uid, setProfilePicture);
-      } else {
-        // Clear profile picture URL when user is logged out
-        setProfilePicture(null);
       }
     });
     return () => unsubscribe();
@@ -64,7 +56,7 @@ const HomeScreen = () => {
     if (searchQuery.trim() === '') {
       setFilteredCards(cards);
     } else {
-      const filteredCard = cards.filter(card =>
+      const filteredCard = cards.filter((card) =>
         card.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredCards(filteredCard);
@@ -88,32 +80,7 @@ const HomeScreen = () => {
   };
 
   const toggleSidebar = () => {
-    if (isSidebarOpen) {
-      Animated.timing(slideAnim, {
-        toValue: -300,
-        duration: 300,
-        useNativeDriver: false,
-      }).start(() => setIsSidebarOpen(false));
-    } else {
-      setIsSidebarOpen(true);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    }
-  };
-
-  const fetchUserProfile = async (uid, setProfilePicture) => {
-    try {
-      const storage = getStorage();
-      const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
-      const url = await getDownloadURL(profilePictureRef);
-      setProfilePicture(url);
-    } catch (error) {
-      console.error('Error fetching profile picture:', error);
-      setProfilePicture(null); // Reset profile picture if fetch fails
-    }
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   return (
@@ -124,14 +91,6 @@ const HomeScreen = () => {
             <Text style={styles.sidebarButtonText}>≡</Text>
           </TouchableOpacity>
           <Text style={styles.logo}>Logo</Text>
-
-          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-          )}
-          </TouchableOpacity>
         </View>
         <TextInput
           placeholder="Search"
@@ -148,19 +107,17 @@ const HomeScreen = () => {
             <View style={styles.bottomBorderFill} />
           </TouchableOpacity>
 
-          {filteredCards.length > 0 ? (
-            filteredCards.map(card => (
-              <TouchableOpacity
-                key={card.id}
-                style={[styles.card, styles.normalCard]}
-                onPress={() => navigation.navigate(card.name)}
-              >
-                <Image source={card.image} style={styles.imageStyle} />
-                <Text style={styles.cardText}>{card.name}</Text>
-                <View style={styles.bottomBorderFill} />
-              </TouchableOpacity>
-            ))
-          ) : null}
+          {filteredCards.length > 0 && filteredCards.map(card => (
+            <TouchableOpacity
+              key={card.id}
+              style={[styles.card, card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard]}
+              onPress={() => navigation.navigate(card.name)}
+            >
+              <Image source={card.image} style={styles.imageStyle} />
+              <Text style={styles.cardText}>{card.name}</Text>
+              <View style={styles.bottomBorderFill} />
+            </TouchableOpacity>
+          ))}
         </View>
 
         <Modal
@@ -170,21 +127,13 @@ const HomeScreen = () => {
           onRequestClose={toggleSidebar}
         >
           <LinearGradient
-            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']} // Set the gradient colors with opacity
-            style={[styles.sidebar, { left: slideAnim }]}
+            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+            style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
           >
             <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-              <Text style={styles.closeButton}>≤</Text>
+              <Text style={styles.closeButtonText}>≤</Text>
             </TouchableOpacity>
-            {profilePicture ? (
-              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-            ) : (
-              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-            )}
             <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
-              <Text>Home</Text>
-            </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Records</Text>
@@ -210,13 +159,15 @@ const HomeScreen = () => {
                 <Text style={styles.buttonText}>Goal Setting</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
+            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Investment</Text>
               </View>
             </TouchableOpacity>
             {user ? (
-              <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
+              <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+                <Text style={styles.buttonText}>Logout</Text>
+              </TouchableOpacity>
             ) : null}
           </LinearGradient>
         </Modal>
@@ -284,21 +235,34 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     marginBottom: 10,
   },
+  specialCard: {
+    width: '48%',
+    height: 150,
+    backgroundColor: '#416ABC',
+    borderRadius: 10,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'white',
+    marginBottom: 10,
+    overflow: 'hidden',
+  },
   cardText: {
     color: 'black',
     textAlign: 'center',
     position: 'absolute',
-    bottom: 10, // Adjust the bottom position
+    bottom: 10,
     left: 0,
     right: 0,
     textShadowColor: 'white',
     textShadowOffset: { width: 1, height: 1 },
-    zIndex: 1, // Set z-index to bring text above the border
+    zIndex: 1,
   },
   cardTextTop: {
     bottom: 'auto',
     top: 10,
-    zIndex: 1, // Add zIndex to bring text above the border
+    zIndex: 1,
   },
   cardImage: {
     width: '100%',
@@ -334,17 +298,24 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
+    left: 0,
+    borderRadius: 20,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
   },
   sidebarItem: {
     marginBottom: 10,
+    width: '100%',
   },
   closeButton: {
-    marginTop: 20,
+    position: 'absolute',
+    top: 20,
+    left: 20,
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
     zIndex: 1,
-  },
+  }, 
   closeButtonText: {
     fontSize: 16,
   },
@@ -360,23 +331,28 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   imageStyle: {
-    width: 100, // Specify the desired width
-    height: 100, // Specify the desired height
+    width: 100,
+    height: 100,
   },
   buttonContainer: {
-    width: '80%',
+    width: '100%',
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'white',
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 5,
     backgroundColor: 'transparent',
   },
   buttonText: {
     color: 'white',
     textAlign: 'center',
+  },
+  profilePicture: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
 });
 
