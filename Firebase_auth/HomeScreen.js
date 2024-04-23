@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Image, Button, ImageBackground } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground } from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
+import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 import { LinearGradient } from 'expo-linear-gradient';
-
 // Images
 import records from './assets/records.png';
 import tasks from './assets/tasks.png';
@@ -12,6 +12,7 @@ import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp'; 
+
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +22,7 @@ const HomeScreen = () => {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCards, setFilteredCards] = useState([]);
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const cards = [
     { id: 2, name: 'Records', image: records },
@@ -45,12 +47,19 @@ const HomeScreen = () => {
             const { firstName, lastName } = userData;
             setFirstName(firstName || '');
             setLastName(lastName || '');
+            // Assuming fetchUserProfile fetches the profile picture based on user ID
+            fetchUserProfile(user.uid, setProfilePicture);
           }
         });
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
       }
     });
+  
     return () => unsubscribe();
   }, [database]);
+  
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -82,7 +91,18 @@ const HomeScreen = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
+  const fetchUserProfile = async (uid, setProfilePicture) => {
+    try {
+      const storage = getStorage();
+      const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
+      const url = await getDownloadURL(profilePictureRef);
+      setProfilePicture(url);
+    } catch (error) {
+      console.error('Error fetching profile picture:', error);
+      setProfilePicture(null); // Reset profile picture if fetch fails
+    }
+    setIsSidebarOpen(!isSidebarOpen);
+  };
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -90,7 +110,14 @@ const HomeScreen = () => {
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
           </TouchableOpacity>
-          <Text style={styles.logo}>Logo</Text>
+          <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          {profilePicture ? (
+            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+          ) : (
+            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+          )}
+          </TouchableOpacity>
         </View>
         <TextInput
           placeholder="Search"
@@ -130,10 +157,15 @@ const HomeScreen = () => {
             colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
             style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
           >
-            <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>≤</Text>
-            </TouchableOpacity>
-            <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
+        <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>≤</Text>
+        </TouchableOpacity>
+            {profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+            )}
+            <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Records</Text>
@@ -196,13 +228,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   sidebarButtonText: {
-    fontSize: 25,
+    fontSize: 35,
     color: 'white',
+    top: 10,
   },
   logo: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    height: 50,
+    width: 50,
     color: 'white',
+    top: 10,
   },
   searchBar: {
     borderWidth: 1,
@@ -304,8 +338,18 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
   },
   sidebarItem: {
-    marginBottom: 10,
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
     width: '100%',
+  },
+  sidebarName: {
+    marginBottom: 10,
+    fontSize: 18, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+    top: -35,
   },
   closeButton: {
     position: 'absolute',
@@ -325,14 +369,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   userIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 50,
     marginRight: 10,
+    top: 10,
+  },
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
   },
   imageStyle: {
-    width: 100,
-    height: 100,
+    width: 105,
+    height: 105,
+    top: -25,
   },
   buttonContainer: {
     width: '100%',
