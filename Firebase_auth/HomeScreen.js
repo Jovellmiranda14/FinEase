@@ -158,7 +158,7 @@ const HomeScreen = () => {
             style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
           >
         <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>≤</Text>
+          <Image source={require('./assets/left_arrow.png')} />
         </TouchableOpacity>
             {profilePicture ? (
               <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
@@ -353,10 +353,10 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
+    top: 22,
+    left: 22,
+    padding: 1,
+    // backgroundColor: '#f0f0f0',
     borderRadius: 5,
     zIndex: 1,
   }, 
