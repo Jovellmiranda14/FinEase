@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef  } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, Modal, Animated } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Image, Modal,ImageBackground, Animated } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const RecordsScreen = ({ navigation }) => {
   const [money, setMoney] = useState('');
@@ -24,6 +25,30 @@ const RecordsScreen = ({ navigation }) => {
   const [user, setUser] = useState(null);
 
 
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName || '');
+            setLastName(lastName || '');
+            // Assuming fetchUserProfile fetches the profile picture based on user ID
+            fetchUserProfile(user.uid, setProfilePicture);
+          }
+        });
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [database]);
   // Function to format date as complete words (e.g., "January 1, 2023")
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -184,24 +209,23 @@ const RecordsScreen = ({ navigation }) => {
     }
   };
 
-  return (
+  return (    
+  <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
+      {/*-------------------------------- ----Header-------------------------------- */}
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text></Text>
-        <Text></Text>
-        <Text></Text>
-        <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
-          <Text style={styles.sidebarButtonText}>≡</Text>
-        </TouchableOpacity>
-        <Text style={styles.logo}>Logo</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+            <Text style={styles.sidebarButtonText}>≡</Text>
+          </TouchableOpacity>
+          <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
           {profilePicture ? (
             <Image source={{ uri: profilePicture }} style={styles.userIcon} />
           ) : (
             <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
           )}
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
       <Text style={styles.title}>Total Amount Spent:</Text>
       <Text>${totalSpent.toFixed(2)}</Text>
       <Text style={styles.title}>Total Amount Saved:</Text> 
@@ -210,6 +234,7 @@ const RecordsScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Enter Amount"
+        placeholderTextColor="white" 
         keyboardType="numeric"
         value={money}
         onChangeText={handleMoneyChange}
@@ -218,6 +243,7 @@ const RecordsScreen = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Enter Source"
+        placeholderTextColor="white" 
         value={source}
         onChangeText={handleSourceChange}
       />
@@ -252,10 +278,10 @@ const RecordsScreen = ({ navigation }) => {
       <ScrollView  style={styles.recordsContainer}>
         {filteredRecords.slice(0).reverse().map(record => (
           <View key={record.id} style={styles.recordItem}>
-            <Text>{record.category} Transaction</Text>
-            <Text>Amount:${record.money.toFixed(2)}</Text>
-            <Text>Source: {record.source}</Text>
-            <Text>Date: {formatDate(record.date)}</Text>
+            <Text style={styles.Transaction}>{record.category} Transaction</Text>
+            <Text style={styles.Amount}>Amount:${record.money.toFixed(2)}</Text>
+            <Text style={styles.Source}>Source: {record.source}</Text>
+            <Text style={styles.Date}>Date: {formatDate(record.date)}</Text>
             <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>
               <Text style={styles.deleteButton}>Delete</Text>
             </TouchableOpacity>
@@ -263,75 +289,86 @@ const RecordsScreen = ({ navigation }) => {
         ))}
       </ScrollView>
 {/* --------------------------------------------Sidebar-------------------------------------------- */}
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={isSidebarOpen}
-        onRequestClose={toggleSidebar}
-      >
-        <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
-          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-            <Text style={styles.closeButton}>≤</Text>
+<Modal
+          animationType="none"
+          transparent={true}
+          visible={isSidebarOpen}
+          onRequestClose={toggleSidebar}
+        >
+          <LinearGradient
+            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+            style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+          >
+        <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+          <Image source={require('./assets/left_arrow.png')} />
+        </TouchableOpacity>
+            {profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+            )}
+            <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+            <View style={styles.buttonContainer}>
+                    <Text style={styles.buttonText}>Home</Text>
+                  </View>
           </TouchableOpacity>
-          {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-          )}
-          <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} >
-            <Text>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Records')} >
-            <Text>TaskCalendar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')}>
-            <Text>TaskCalendar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')}>
-            <Text>Online Banking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Rewards')}>
-            <Text>Rewards</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('GoalSetting')}>
-            <Text>Goal Setting</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Investment')}>
-            <Text>Investment</Text>
-          </TouchableOpacity>
-          {user ? (
-            <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
-          ) : null}
-        </Animated.View>
-      </Modal>
+            <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Records</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>TaskCalendar</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Online Banking</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Rewards</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Goal Setting</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Investment</Text>
+              </View>
+            </TouchableOpacity>
+            {user ? (
+              <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+                <Text style={styles.buttonText}>Logout</Text>
+              </TouchableOpacity>
+            ) : null}
+          </LinearGradient>
+        </Modal>
     </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
   },
   sidebarButton: {
     padding: 10,
   },
   sidebarButtonText: {
-    fontSize: 25,
-    color: 'black',
-  },
-  logo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+    fontSize: 35,
+    color: 'white',
+    top: 10,
   },
   input: {
     width: '80%',
@@ -341,6 +378,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
+    color: 'white',
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -349,42 +387,46 @@ const styles = StyleSheet.create({
   },
   recordsContainer: {
     marginTop: 20,
-  },
+  }
+  ,
   recordItem: {
     marginBottom: 10,
   },
   deleteButton: {
     color: 'red',
   },
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  header: {
+  sidebarItem: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+  },  header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
   },
+
   sidebarButton: {
     padding: 10,
   },
-  sidebarButtonText: {
-    fontSize: 25,
-    color: 'black',
-  },
+
   logo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+    height: 50,
+    width: 50,
+    top: 10,
   },
-  userIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 10,
+
+  sidebarName: {
+    marginBottom: 10,
+    fontSize: 18, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+    top: -35,
   },
+  
+  title:{color: 'white'},
   sidebar: {
     position: 'absolute',
     top: 0,
@@ -403,36 +445,48 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   sidebarItem: {
-    marginBottom: 10,
-  },
-  container: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+  },  backgroundImage: {
     flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
+  buttonContainer: {
+    width: '100%',
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 10,
+    marginBottom: 5,
+    backgroundColor: 'transparent',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
   },
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
+  },
+
   sidebarButton: {
     padding: 10,
   },
-  sidebarButtonText: {
-    fontSize: 25,
-    color: 'black',
-  },
-  logo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
-  },
+
   userIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 40,
+    height: 40,
+    borderRadius: 50,
     marginRight: 10,
+    top: 10,
   },
   sidebar: {
     position: 'absolute',
@@ -444,13 +498,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  sidebarItem: {
-    marginBottom: 10,
-  },
   closeButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
+    position: 'absolute',
+    top: 22,
+    left: 22,
+    padding: 1,
     borderRadius: 5,
     zIndex: 1,
   },

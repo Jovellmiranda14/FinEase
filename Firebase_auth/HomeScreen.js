@@ -101,11 +101,11 @@ const HomeScreen = () => {
       console.error('Error fetching profile picture:', error);
       setProfilePicture(null); // Reset profile picture if fetch fails
     }
-    setIsSidebarOpen(!isSidebarOpen);
   };
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
-      <View style={styles.container}>
+      {/*-------------------------------- ----Header-------------------------------- */}
+      <View style={styles.container}> 
         <View style={styles.header}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
@@ -119,6 +119,7 @@ const HomeScreen = () => {
           )}
           </TouchableOpacity>
         </View>
+        {/*-------------------------------- ----Header-------------------------------- */}
         <TextInput
           placeholder="Search"
           style={styles.searchBar}
@@ -146,7 +147,7 @@ const HomeScreen = () => {
             </TouchableOpacity>
           ))}
         </View>
-
+{/*-------------------------------- ----Navigation-------------------------------- */}
         <Modal
           animationType="none"
           transparent={true}
@@ -166,6 +167,11 @@ const HomeScreen = () => {
               <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
             )}
             <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+            <View style={styles.buttonContainer}>
+                    <Text style={styles.buttonText}>Home</Text>
+                  </View>
+          </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Records</Text>
@@ -186,7 +192,7 @@ const HomeScreen = () => {
                 <Text style={styles.buttonText}>Rewards</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('GoalSetting')} style={styles.sidebarItem}>
+            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Goal Setting</Text>
               </View>
@@ -203,6 +209,7 @@ const HomeScreen = () => {
             ) : null}
           </LinearGradient>
         </Modal>
+        {/*-------------------------------- ----Navigation-------------------------------- */}
       </View>
     </ImageBackground>
   );
@@ -212,6 +219,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    
   },
   backgroundImage: {
     flex: 1,
@@ -235,7 +243,6 @@ const styles = StyleSheet.create({
   logo: {
     height: 50,
     width: 50,
-    color: 'white',
     top: 10,
   },
   searchBar: {
@@ -356,7 +363,7 @@ const styles = StyleSheet.create({
     top: 22,
     left: 22,
     padding: 1,
-    // backgroundColor: '#f0f0f0',
+
     borderRadius: 5,
     zIndex: 1,
   }, 
