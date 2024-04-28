@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground, Image } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
@@ -15,8 +15,12 @@ const SignUpForm = ({ onBackToLogin }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [hidePassword, setHidePassword] = useState(true);
   const auth = getAuth();
 
+  const togglePasswordVisibility = () => {
+    setHidePassword(!hidePassword);
+  };
   const handleSignUp = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -88,6 +92,12 @@ const SignUpForm = ({ onBackToLogin }) => {
               onChangeText={setPassword}
               secureTextEntry
             />
+          <TouchableOpacity onPress={togglePasswordVisibility}>
+        <Image
+          source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+          style={styles.toggleIcon}
+        />
+      </TouchableOpacity>
             {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
             <CustomButton title="Create an Account" onPress={handleSignUp} />
             <TouchableOpacity onPress={onBackToLogin}>
@@ -194,6 +204,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'normal',
+  }, 
+  toggleIcon: {
+    width: 30,
+    height: 30,
+    bottom: 43,
+    left: 120,
   },
 });
 

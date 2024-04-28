@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, View, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { Text, TextInput, Button, View, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
 import ForgotPassword from './ForgotPassword';
 import SignUpForm from './SignUpForm';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+
+import hide_password from  './assets/hide_password.png';
+import unhide_password from  './assets/unhide_password.png';
 
 const CustomButton = ({ title, onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -18,6 +21,7 @@ const LoginForm = () => {
   const [showSignUpForm, setShowSignUpForm] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginAttempts, setLoginAttempts] = useState(0);
+  const [hidePassword, setHidePassword] = useState(true);
   const auth = getAuth();
   const handleLogin = async () => {
     try {
@@ -46,6 +50,9 @@ const LoginForm = () => {
   const handleBackToLogin = () => {
     setShowForgotPassword(false);
   };
+  const togglePasswordVisibility = () => {
+    setHidePassword(!hidePassword);
+  };
 
   return (
     <View style={styles.container}>
@@ -68,8 +75,14 @@ const LoginForm = () => {
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={hidePassword} 
           />
+           <TouchableOpacity onPress={togglePasswordVisibility}>
+        <Image
+          source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+          style={styles.toggleIcon}
+        />
+      </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
             <Text style={styles.forgotPasswordText}>Forgot Password</Text>
@@ -137,7 +150,8 @@ const styles = StyleSheet.create({
   },
   forgotPasswordText: {
     color: 'white',
-    textDecorationLine: 'underline'
+    textDecorationLine: 'underline',
+    bottom: 40,
   },
   errorMessage: {
     color: 'red',
@@ -164,6 +178,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'normal',
+  },  
+  toggleIcon: {
+    width: 30,
+    height: 30,
+    bottom: 43,
+    left: 65,
   },
 });
 
