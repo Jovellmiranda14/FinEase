@@ -1,10 +1,11 @@
 // Import the necessary modules
-import React, { useState, useEffect } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image } from 'react-native';
-import { getAuth, updateProfile, updatePassword, sendPasswordResetEmail } from '@firebase/auth';
+import { getDatabase, ref, set, onValue } from 'firebase/database';
+import React, { useState, useEffect, useRef } from 'react';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image, Modal, Animated } from 'react-native';
+import { getAuth, updateProfile, updatePassword, sendPasswordResetEmail, onAuthStateChanged  } from '@firebase/auth';
 import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
-
+import { LinearGradient } from 'expo-linear-gradient';
 // CustomButton component
 const CustomButton = ({ title, onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -15,46 +16,17 @@ const CustomButton = ({ title, onPress }) => (
 // Userprofile component
 const Userprofile = () => {
   const [firstName, setFirstName] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profilePicture, setProfilePicture] = useState(null); // State to store the profile picture
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [dob, setDob] = useState(null);
+  const [age, setAge] = useState(null);
+  const [user, setUser] = useState('');
+  const slideAnim = useRef(new Animated.Value(-300)).current;
   const auth = getAuth();
   const storage = getStorage();
-
-  // Function to update user's profile
-  const handleUpdateProfile = async () => {
-    try {
-      const user = auth.currentUser;
-  
-      // Update user's profile with first name and last name
-      await updateProfile(user, { displayName: `${firstName} ${lastName}` });
-  
-      // Update user's email and phone number
-      if (email !== '') {
-        await user.updateEmail(email);
-      }
-      if (phoneNumber !== '') {
-        await user.updatePhoneNumber(phoneNumber);
-      }
-  
-      console.log('User profile updated successfully:', user.displayName);
-  
-      // Update Firebase Realtime Database with the updated first and last name
-      const db = getDatabase();
-      const userRef = databaseRef(db, `users/${user.uid}`);
-      await set(userRef, {
-        firstName: firstName,
-        lastName: lastName,
-      });
-  
-    } catch (error) {
-      console.error('Profile update error:', error);
-      setErrorMessage('Failed to update profile. Please try again.');
-    }
-  };
 
   // Function to handle picture upload
   const handleUploadPicture = async () => {
@@ -130,29 +102,76 @@ const Userprofile = () => {
   
   const database = getDatabase();
 
-useEffect(() => {
-  const auth = getAuth();
-  const unsubscribe = onAuthStateChanged(auth, (user) => {
-    setUser(user);
-    if (user) {
-      const userRef = ref(database, `users/${user.uid}`);
-      onValue(userRef, (snapshot) => {
-        const userData = snapshot.val();
-        if (userData) {
-          const { firstName, lastName } = userData;
-          setFirstName(firstName);
-          setLastName(lastName);
-        }
-      });
-    } else {
-      // Clear profile-related states when user is logged out
-      setFirstName('');
-      setLastName('');
-    }
-  });
-  return () => unsubscribe();
-}, [database]);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName, email, dob, phoneNumber } = userData;
+            setFirstName(firstName);
+            setLastName(lastName);
+            setEmail(email);
+            setDob(dob);
+            setPhoneNumber(phoneNumber);
+          }
+        });
+      } else {
+        // Clear profile-related states when user is logged out
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPhoneNumber('');
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [database]);
 
+  useEffect(() => {
+    const database = getDatabase();
+    const userRef = ref(database, `users/${user.uid}`); // Replace 'userId' with the appropriate path in your database
+
+    // Fetch user data including firstName, lastName, and dob from the database
+    onValue(userRef, (snapshot) => {
+      const userData = snapshot.val();
+      if (userData) {
+        setFirstName(userData.firstName || '');
+        setLastName(userData.lastName || '');
+        setDob(userData.dob || null); // Assuming 'dob' is stored in the database
+      }
+    });
+  }, []); // Run once on component mount
+
+  useEffect(() => {
+    // Calculate age when dob changes
+    if (dob) {
+      const dobDate = new Date(dob);
+      const age = calculateAgeFromDateOfBirth(dobDate);
+      setAge(age);
+    }
+  }, [dob]);
+
+  
+  function calculateAgeFromDateOfBirth(dob) {
+    const currentDate = new Date(); // Current date
+    const dobDate = new Date(dob); // Date of birth
+  
+    let age = currentDate.getFullYear() - dobDate.getFullYear(); // Initial age calculation
+  
+    // Check if the birthday for this year has not occurred yet
+    if (
+      currentDate.getMonth() < dobDate.getMonth() ||
+      (currentDate.getMonth() === dobDate.getMonth() && currentDate.getDate() < dobDate.getDate())
+    ) {
+      age--; // Subtract 1 from age if the birthday hasn't occurred yet this year
+    }
+  
+    return age;
+  }
+  
 
 
 
@@ -161,7 +180,22 @@ useEffect(() => {
     // Open the image picker when the profile picture is pressed
     handleUploadPicture();
   };
-
+  const toggleSidebar = () => {
+    if (isSidebarOpen) {
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setIsSidebarOpen(false));
+    } else {
+      setIsSidebarOpen(true);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
   useEffect(() => {
     // Fetch the profile picture URL when the component mounts
     const fetchProfilePictureURL = async () => {
@@ -179,6 +213,12 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
+<View style={styles.header}>
+            <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+              <Text style={styles.sidebarButtonText}>≡</Text>
+            </TouchableOpacity>
+            <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+          </View>
       <View style={styles.profileDetails}>
       <TouchableOpacity onPress={handleProfilePicturePress}>
   {profilePicture ? (
@@ -187,41 +227,78 @@ useEffect(() => {
     <Image source={require('./assets/user-icon.png')} style={styles.profilePicture} />
   )}
 </TouchableOpacity>
-        <Text style={styles.sectionTitle}>User Profile Details</Text>
-  <Text style={styles.detailText}>First Name: {firstName}</Text>
-  <Text style={styles.detailText}>Last Name: {lastName}</Text>
-  <Text style={styles.detailText}>Email Address: {email}</Text>
-  <Text style={styles.detailText}>Phone Number: {phoneNumber}</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email Address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number (Optional)"
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="numeric"
-        />
-        <CustomButton title="Save Profile" onPress={handleUpdateProfile} />
-        {successMessage ? <Text style={styles.successMessage}>{successMessage}</Text> : null}
-        <CustomButton title="Change Password" onPress={handleChangePassword} />
+        <Text style={styles.sectionTitle}>{firstName} {lastName}</Text>
+        <Text style={styles.sectionTitle}> Username</Text>
+        <Text style={styles.detailText}>Age: {age}</Text>
+        <Text style={styles.detailText}>Phone Number: {phoneNumber}</Text>
+        <Text style={styles.detailText}>Email: {email}</Text>
+        <Text style={styles.detailText}>Date of Birth: {dob}</Text>
+        
+        
       </View>
-      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+      {/* <Modal
+            animationType="none"
+            transparent={true}
+            visible={isSidebarOpen}
+            onRequestClose={toggleSidebar}
+          >
+            <LinearGradient
+              colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+              style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+            >
+          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+            <Image source={require('./assets/left_arrow.png')} />
+          </TouchableOpacity>
+              {profilePicture ? (
+                <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+              ) : (
+                <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+              )}
+              <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                      <Text style={styles.buttonText}>Home</Text>
+                    </View>
+            </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>Records</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>TaskCalendar</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>Online Banking</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>Rewards</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>Goal Setting</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>Investment</Text>
+                </View>
+              </TouchableOpacity>
+              {user ? (
+                <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+                  <Text style={styles.buttonText}>Logout</Text>
+                </TouchableOpacity>
+              ) : null}
+            </LinearGradient>
+          </Modal> */}
+  
+    
     </View>
   );
 };
@@ -234,10 +311,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  logo: {
+    height: 50,
+    width: 50,
+    top: 10,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+  }, sidebarButton: {
+    padding: 10,
   },
   input: {
     height: 40,
@@ -260,6 +344,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#492FAA',
     justifyContent: 'center',
     alignItems: 'center',
+  },  sidebarButtonText: {
+    fontSize: 35,
+    color: 'white',
+    top: 10,
+  },
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
   },
   buttonText: {
     color: 'white',
@@ -285,6 +380,15 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     marginTop: 10,
+  },  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  sidebarItem: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
   },
 });
 

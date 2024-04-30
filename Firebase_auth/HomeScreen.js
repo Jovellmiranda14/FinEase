@@ -91,7 +91,7 @@ const HomeScreen = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-  const fetchUserProfile = async (uid, setProfilePicture) => {
+  const fetchUserProfile = async (uid) => {
     try {
       const storage = getStorage();
       const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
@@ -164,7 +164,7 @@ const HomeScreen = () => {
             {profilePicture ? (
               <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
             ) : (
-              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+              <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
             )}
             <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>

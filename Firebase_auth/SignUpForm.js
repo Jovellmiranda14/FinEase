@@ -8,6 +8,7 @@ const CustomButton = ({ title, onPress }) => (
     <Text style={styles.buttonText}>{title}</Text>
   </TouchableOpacity>
 );
+
 const SignUpForm = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,12 +16,14 @@ const SignUpForm = ({ onBackToLogin }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [dob, setDob] = useState(''); // State for date of birth
   const [hidePassword, setHidePassword] = useState(true);
   const auth = getAuth();
 
   const togglePasswordVisibility = () => {
     setHidePassword(!hidePassword);
   };
+
   const handleSignUp = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -36,7 +39,9 @@ const SignUpForm = ({ onBackToLogin }) => {
         email: user.email,
         firstName: firstName,
         lastName: lastName,
+        dob: dob, // Assign date of birth to the database
         phoneNumber: phoneNumber,
+        password: password,
       });
 
       console.log('User created successfully:', user.displayName);
@@ -51,65 +56,68 @@ const SignUpForm = ({ onBackToLogin }) => {
   };
 
   return (
-
-      <View style={styles.container}>
-       <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
-          <View style={styles.content}>
-            
-            <TextInput
-              style={styles.firstNameInput}
-              placeholder="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              autoCapitalize="none"
-            />
-            
-            <TextInput
-              style={styles.lastNameInput}
-              placeholder="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.phoneNumberInput}
-              placeholder="Phone Number (Optional)"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              keyboardType='numeric'
-            />
-            <TextInput
-              style={styles.emailInput}
-              placeholder="Email Address"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.passwordInput}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
+    <View style={styles.container}>
+      <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
+        <View style={styles.content}>
+          <TextInput
+            style={styles.firstNameInput}
+            placeholder="First Name"
+            value={firstName}
+            onChangeText={setFirstName}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.lastNameInput}
+            placeholder="Last Name"
+            value={lastName}
+            onChangeText={setLastName}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.phoneNumberInput}
+            placeholder="Phone Number (Optional)"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            keyboardType='numeric'
+          />
+          <TextInput
+            style={styles.emailInput}
+            placeholder="Email Address"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.dateInput}
+            placeholder="Date of Birth: YYYY-MM-DD"
+            value={dob}
+            onChangeText={setDob}
+            autoCapitalize="none"
+            keyboardType="numeric"
+          />
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={hidePassword} // Use secureTextEntry to hide password
+          />
           <TouchableOpacity onPress={togglePasswordVisibility}>
-        <Image
-          source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
-          style={styles.toggleIcon}
-        />
-      </TouchableOpacity>
-            {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
-            <CustomButton title="Create an Account" onPress={handleSignUp} />
-            <TouchableOpacity onPress={onBackToLogin}>
-              <Text style={styles.registerNow}>Have an Account? Login Now</Text>
-            </TouchableOpacity>
-          </View>
-        </ImageBackground>
-      </View>
-    );
-  };
-  
-
+            <Image
+              source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+              style={styles.toggleIcon}// Use secureTextEntry to hide password
+            /> 
+          </TouchableOpacity>
+          {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+          <CustomButton title="Create an Account" onPress={handleSignUp} />
+          <TouchableOpacity onPress={onBackToLogin}>
+            <Text style={styles.registerNow}>Have an Account? Login Now</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -169,6 +177,16 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderRadius: 15,
   },
+  dateInput: {
+    height: 40,
+    width: 300,
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 8,
+    backgroundColor: 'white',
+    borderColor: 'black',
+    borderRadius: 15,
+  },
   passwordInput: {
     height: 40,
     width: 300,
@@ -204,11 +222,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'normal',
-  }, 
+  },
   toggleIcon: {
     width: 30,
     height: 30,
-    bottom: 43,
+    bottom: 44,
     left: 120,
   },
 });

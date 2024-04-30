@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { View, Button, StyleSheet, ScrollView, Text, TextInput } from 'react-native';
 import PieChart from 'react-native-pie-chart';
 import { Picker } from '@react-native-picker/picker';
-
 const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onDelete }) => {
   const total = series.reduce((acc, value) => acc + value, 0);
   const [chartTitle, setChartTitle] = useState(title);
@@ -30,14 +29,14 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
       <View style={styles.percentageLabelsContainer}>{renderPercentageLabels()}</View>
       <TextInput
         style={styles.input}
-        onChangeText={text => setChartTitle(text)}
+        onChangeText={(text) => setChartTitle(text)}
         placeholder="Enter title"
         value={chartTitle}
       />
       <Text>{chartDescription}</Text>
       <TextInput
         style={styles.input}
-        onChangeText={text => setChartDescription(text)}
+        onChangeText={(text) => setChartDescription(text)}
         placeholder="Enter description"
         value={chartDescription}
       />
@@ -45,34 +44,13 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
     </View>
   );
 };
-
-const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
-  const total = series.reduce((acc, value) => acc + value, 0);
-
-  const renderPercentageLabels = () => {
-    const percentages = series.map((value) => ((value / total) * 100).toFixed(2));
-    return series.map((value, index) => (
-      <Text key={index} style={styles.percentageLabel}>
-        {percentages[index]}%
-      </Text>
-    ));
-  };
-
-  return (
-    <View style={styles.chartContainer}>
-      <Text style={styles.title}>Summary</Text>
-      <PieChart
-        widthAndHeight={widthAndHeight}
-        series={series}
-        sliceColor={sliceColor}
-        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
-        coverFill={'#FFF'}
-      />
-      <View style={styles.percentageLabelsContainer}>{renderPercentageLabels()}</View>
-    </View>
-  );
+const getMonthName = (monthIndex) => {
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  return months[monthIndex];
 };
-
 const TaskCalendar = () => {
   const [selectedMonth, setSelectedMonth] = useState('January');
   const [selectedDay, setSelectedDay] = useState('1');
@@ -80,16 +58,21 @@ const TaskCalendar = () => {
   const [charts, setCharts] = useState([
     { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], title: 'Chart 1', description: 'Description for Chart 1' }
   ]);
+
   const generateRandomSeries = () => {
     // Generate random numbers for the series
     const randomSeries = Array.from({ length: 2 }, () => Math.floor(Math.random() * 100));
     return randomSeries;
   };
+
   const handleUpdateChart = () => {
     // For demonstration, let's assume new series values are retrieved from elsewhere
     const newSeries = generateRandomSeries();
     const newSliceColor = ['#000000', '#FFFFFF']; // Two colors for demonstration
-    setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }]);
+    setCharts([
+      ...charts,
+      { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }
+    ]);
   };
 
   const handleDeleteChart = (index) => {
@@ -98,78 +81,82 @@ const TaskCalendar = () => {
     setCharts(updatedCharts);
   };
 
-  const totalSeries = charts.reduce((acc, chart) => {
-    return chart.series.map((value, index) => (acc[index] || 0) + value);
-  }, []);
+  const totalSeries = useMemo(() => {
+    return charts.reduce((acc, chart) => {
+      return chart.series.map((value, index) => (acc[index] || 0) + value);
+    }, []);
+  }, [charts]);
 
-  // Filter charts based on selected month and day
   const filteredCharts = useMemo(() => {
     return charts.filter((chart) => {
-      // You may need to adjust the logic here based on your requirements
-      // For demonstration, we're assuming all charts belong to January 1, 2024
-      return selectedMonth === 'January' && selectedDay === '1' && selectedYear === '2024';
+      const [chartMonth, chartDay, chartYear] = chart.title.split(' '); // Assuming chart title format is "Month Day Year"
+      return (
+        chartMonth === selectedMonth &&
+        chartDay === selectedDay &&
+        chartYear === selectedYear
+      );
     });
   }, [charts, selectedMonth, selectedDay, selectedYear]);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      <SummaryChart
-        widthAndHeight={200} // Size of the Circle
-        series={totalSeries}
-        sliceColor={['#FF5733', '#33FF57']} // Two colors for demonstration
-      />
+      <View style={styles.chartContainer}>
+        <Text style={styles.title}>Summary</Text>
+        <PieChart
+          widthAndHeight={200}
+          series={totalSeries}
+          sliceColor={['#FF5733', '#33FF57']}
+          coverRadius={0.7}
+          coverFill={'#FFF'}
+        />
+      </View>
 
       <View style={styles.container}>
         <Text>Month:</Text>
         <Picker
           selectedValue={selectedMonth}
-          onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}
+          onValueChange={(itemValue) => setSelectedMonth(itemValue)}
           style={{ height: 50, width: 150 }}
         >
-          <Picker.Item label="January" value="January" />
-          <Picker.Item label="February" value="February" />
-          <Picker.Item label="March" value="March" />
-          <Picker.Item label="April" value="April" />
-          <Picker.Item label="May" value="May" />
-          <Picker.Item label="June" value="June" />
-          <Picker.Item label="July" value="July" />
-          <Picker.Item label="August" value="August" />
-          <Picker.Item label="September" value="September" />
-          <Picker.Item label="October" value="October" />
-          <Picker.Item label="November" value="November" />
-          <Picker.Item label="December" value="December" />
+          {Array.from({ length: 12 }, (_, i) => (
+            <Picker.Item key={i} label={getMonthName(i)} value={getMonthName(i)} />
+          ))}
         </Picker>
+
         <Text>Day:</Text>
         <Picker
           selectedValue={selectedDay}
-          onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+          onValueChange={(itemValue) => setSelectedDay(itemValue)}
           style={{ height: 50, width: 150 }}
         >
-          {Array.from({ length: 31 }, (_, index) => index + 1).map((day) => (
-            <Picker.Item key={day} label={day.toString()} value={day.toString()} />
+          {Array.from({ length: 31 }, (_, i) => (
+            <Picker.Item key={i + 1} label={(i + 1).toString()} value={(i + 1).toString()} />
           ))}
         </Picker>
+
         <Text>Year:</Text>
         <Picker
           selectedValue={selectedYear}
-          onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}
+          onValueChange={(itemValue) => setSelectedYear(itemValue)}
           style={{ height: 50, width: 150 }}
         >
-          {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
-            <Picker.Item key={year} label={year.toString()} value={year.toString()} />
+          {Array.from({ length: 10 }, (_, i) => (
+            <Picker.Item key={2024 - i} label={(2024 - i).toString()} value={(2024 - i).toString()} />
           ))}
         </Picker>
+
         {filteredCharts.map((chart, index) => (
           <TestChart
             key={index}
-            widthAndHeight={150}  // Size of the Circle
+            widthAndHeight={150}
             series={chart.series}
             sliceColor={chart.sliceColor}
             title={chart.title}
             description={chart.description}
-            onDelete={() => handleDeleteChart(index)} // Pass delete function
+            onDelete={() => handleDeleteChart(index)}
           />
         ))}
+
         <Button title="Add Chart" onPress={handleUpdateChart} />
       </View>
     </ScrollView>
@@ -181,6 +168,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
   },
   scrollViewContainer: {
     flexGrow: 1,
@@ -192,15 +180,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    margin: 10,
+    marginVertical: 10,
   },
   percentageLabelsContainer: {
     position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
-    top: '50%', // Position the container at the vertical center of the donut
-    left: '50%', // Position the container at the horizontal center of the donut
-    transform: [{ translateX: -10 }, { translateY: -10 }], // Adjust translation to center the labels
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -10 }, { translateY: -10 }],
   },
   percentageLabel: {
     position: 'absolute',
