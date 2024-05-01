@@ -39,9 +39,8 @@ const SignUpForm = ({ onBackToLogin }) => {
         email: user.email,
         firstName: firstName,
         lastName: lastName,
-        dob: dob, // Assign date of birth to the database
-        phoneNumber: phoneNumber,
-        password: password,
+        dob: dob,
+        phoneNumber: phoneNumber
       });
 
       console.log('User created successfully:', user.displayName);
@@ -140,7 +139,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 300,
     borderWidth: 1,
-    marginTop: 160,
+    marginTop: 190,
     marginBottom: 10,
     paddingHorizontal: 8,
     backgroundColor: 'white',

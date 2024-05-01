@@ -1,12 +1,14 @@
 // Import the necessary modules
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image, Modal, Animated } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, Image, Modal, Animated, ImageBackground } from 'react-native';
 import { getAuth, signOut, sendPasswordResetEmail, onAuthStateChanged  } from '@firebase/auth';
-import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
 
+import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
 import { LinearGradient } from 'expo-linear-gradient';
+
+
 // CustomButton component
 const CustomButton = ({ title, onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.button}>
@@ -15,7 +17,7 @@ const CustomButton = ({ title, onPress }) => (
 );
 
 // Userprofile component
-const Userprofile = () => {
+const Userprofile = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [lastName, setLastName] = useState('');
@@ -78,7 +80,7 @@ const Userprofile = () => {
   
       // Set a timeout to clear the success message after a certain period (e.g., 1 minute)
       setTimeout(() => {
-        setSuccessMessage('');
+        // setSuccessMessage('');
       }, 60000); // 1 minute in milliseconds
   
       // Clear any existing error message
@@ -90,13 +92,13 @@ const Userprofile = () => {
   
         // Set a timeout to clear the error message after a certain period (e.g., 1 minute)
         setTimeout(() => {
-          setErrorMessage('');
+          // setErrorMessage('');
         }, 60000); // 1 minute in milliseconds
       } else {
         setErrorMessage('Failed to send password reset email. Please try again later.');
       }
       // Clear any existing success message
-      setSuccessMessage('');
+
     }
   };
   
@@ -226,7 +228,7 @@ const Userprofile = () => {
     fetchProfilePictureURL();
   }, []); // Empty dependency array to ensure this effect runs only once on mount
 
-  return (
+  return (<ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
     <View style={styles.container}>
       <View style={styles.header}>
             <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
@@ -245,7 +247,7 @@ const Userprofile = () => {
         <Text style={styles.sectionTitle}>{firstName} {lastName}</Text>
         <Text style={styles.sectionTitle}> Username</Text>
         <Text style={styles.detailText}>Age: {age}</Text>
-        <Text style={styles.detailText}>Phone Number: {phoneNumber}</Text>
+        <Text style={styles.detailText}>Phone: {phoneNumber}</Text>
         <Text style={styles.detailText}>Email: {email}</Text>
         <Text style={styles.detailText}>Date of Birth: {dob}</Text>
       </View>
@@ -315,6 +317,7 @@ const Userprofile = () => {
   
     
     </View>
+    </ImageBackground>
   );
 };
 
@@ -364,6 +367,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  detailText:{
+    color: 'white'
+  }
+  ,
   buttonText: {
     color: 'white',
     fontSize: 16,
@@ -395,7 +402,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-  },  
+  }, 
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  },
   sidebarIcon: {
     width: 85,
     height: 85,

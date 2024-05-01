@@ -84,7 +84,7 @@ const App = () => {
             </Stack.Screen>
             <Stack.Screen name="Records" component={RecordsScreen}options={{ headerShown: false }} />
             <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen} />
-            <Stack.Screen name="Profile" component={Userprofile} />
+            <Stack.Screen name="Profile" component={Userprofile}options={{ headerShown: false }}/>
             <Stack.Screen name="Goal Setting" component={GoalSetting} />
             <Stack.Screen name="Online Banking" component={Onlinebanking} />
             <Stack.Screen name="Investment" component={Investment} />

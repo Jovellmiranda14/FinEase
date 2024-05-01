@@ -140,9 +140,9 @@ const Rewards = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
               <Text>Investment</Text>
             </TouchableOpacity>
-            {user ? (
+    
               <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
-            ) : null}
+
           </Animated.View>
         </Modal>
     </View>

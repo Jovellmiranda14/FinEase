@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 160,
     marginBottom: 10,
-    width: '115%',
-    height: '8%',
+    width: 250,
+    height: '8.5%',
   },
   passwordInput: {
     backgroundColor: 'white',
@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 10,
     marginBottom: 10,
-    width: '115%',
-    height: '8%',
+    width: 250,
+    height: '8.5%',
   },
   forgotPassword: {
     alignSelf: 'flex-end',
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     bottom: 43,
-    left: 65,
+    left: 90,
   },
 });
 
