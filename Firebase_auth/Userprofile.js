@@ -2,8 +2,9 @@
 import { getDatabase, ref, set, onValue } from 'firebase/database';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet, Image, Modal, Animated } from 'react-native';
-import { getAuth, updateProfile, updatePassword, sendPasswordResetEmail, onAuthStateChanged  } from '@firebase/auth';
+import { getAuth, signOut, sendPasswordResetEmail, onAuthStateChanged  } from '@firebase/auth';
 import { getStorage, ref as storageRef, getDownloadURL, uploadBytes } from 'firebase/storage'; // Import storage module
+
 import * as ImagePicker from 'expo-image-picker'; // Import ImagePicker from Expo
 import { LinearGradient } from 'expo-linear-gradient';
 // CustomButton component
@@ -129,7 +130,21 @@ const Userprofile = () => {
   
     return () => unsubscribe();
   }, [database]);
+  const handleAuthentication = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('User not logged in.');
+      }
 
+      console.log('User logged out successfully!');
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
   useEffect(() => {
     const database = getDatabase();
     const userRef = ref(database, `users/${user.uid}`); // Replace 'userId' with the appropriate path in your database
@@ -213,7 +228,7 @@ const Userprofile = () => {
 
   return (
     <View style={styles.container}>
-<View style={styles.header}>
+      <View style={styles.header}>
             <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
               <Text style={styles.sidebarButtonText}>≡</Text>
             </TouchableOpacity>
@@ -233,10 +248,8 @@ const Userprofile = () => {
         <Text style={styles.detailText}>Phone Number: {phoneNumber}</Text>
         <Text style={styles.detailText}>Email: {email}</Text>
         <Text style={styles.detailText}>Date of Birth: {dob}</Text>
-        
-        
       </View>
-      {/* <Modal
+      <Modal
             animationType="none"
             transparent={true}
             visible={isSidebarOpen}
@@ -290,13 +303,15 @@ const Userprofile = () => {
                   <Text style={styles.buttonText}>Investment</Text>
                 </View>
               </TouchableOpacity>
-              {user ? (
+              <TouchableOpacity onPress={handleChangePassword} style={[styles.buttonContainer, { bottom: 20 }]}>
+                  <Text style={styles.buttonText}>Password Reset</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
                   <Text style={styles.buttonText}>Logout</Text>
                 </TouchableOpacity>
-              ) : null}
+
             </LinearGradient>
-          </Modal> */}
+          </Modal>
   
     
     </View>
@@ -311,6 +326,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
   logo: {
     height: 50,
     width: 50,
@@ -320,10 +341,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  }, sidebarButton: {
-    padding: 10,
   },
-  input: {
+    input: {
     height: 40,
     width: '100%',
     borderWidth: 1,
@@ -344,17 +363,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#492FAA',
     justifyContent: 'center',
     alignItems: 'center',
-  },  sidebarButtonText: {
-    fontSize: 35,
-    color: 'white',
-    top: 10,
-  },
-  sidebarIcon: {
-    width: 85,
-    height: 85,
-    borderRadius: 55,
-    marginRight: 4,
-    top: -45,
   },
   buttonText: {
     color: 'white',
@@ -375,6 +383,64 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  closeButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    padding: 10,
+    borderRadius: 5,
+    zIndex: 1,
+  },
+  sidebarContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },  
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
+  },  sidebar: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 300,
+    backgroundColor: '#fff',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 0,
+    borderRadius: 20,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },  
+  sidebarItem: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+  },
+  buttonContainer: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 10,
+    marginBottom: 5,
+    backgroundColor: 'transparent',
+  },  
+  sidebarButtonText: {
+    fontSize: 35,
+    color: 'white',
+    top: 10,
+  },    
+  sidebarButton: {
+    padding: 10,
+  },
   profilePicture: {
     width: 100,
     height: 100,
@@ -383,12 +449,14 @@ const styles = StyleSheet.create({
   },  buttonText: {
     color: 'white',
     textAlign: 'center',
-  },
-  sidebarItem: {
-    marginBottom: 10, 
+  },  
+  sidebarName: {
+    marginBottom: 10,
+    fontSize: 18, 
     color: 'white',
     textAlign: "center",
     width: '100%',
+    top: -35,
   },
 });
 

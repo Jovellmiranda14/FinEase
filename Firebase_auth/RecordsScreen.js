@@ -362,9 +362,7 @@
       justifyContent: 'center',
       alignItems: 'center',
     },
-    sidebarButton: {
-      padding: 10,
-    },
+
     sidebarButtonText: {
       fontSize: 35,
       color: 'white',
@@ -405,10 +403,6 @@
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: 20,
-    },
-
-    sidebarButton: {
-      padding: 10,
     },
 
     logo: {
