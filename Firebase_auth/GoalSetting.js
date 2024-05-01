@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ProgressBarAndroid, TextInput, Button } from 'react-native';
-
+//Testing
 const GoalSettingScreen = () => {
+  const [headerText, setHeaderText] = useState('My Goals');
   const [goals, setGoals] = useState([
-    { id: 1, description: 'Complete task 1', completed: false },
-    { id: 2, description: 'Achieve milestone 2', completed: false },
-    { id: 3, description: 'Learn new skill', completed: false },
-    { id: 4, description: 'Read a book', completed: false },
+    { id: 1, title: 'Goal 1', description: 'Complete task 1', completed: false },
   ]);
-  const [newGoal, setNewGoal] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newHeaderText, setNewHeaderText] = useState('');
 
   const handleGoalCompletion = (goalId) => {
     const updatedGoals = goals.map((goal) =>
@@ -24,27 +24,61 @@ const GoalSettingScreen = () => {
   };
 
   const handleAddGoal = () => {
-    if (newGoal.trim() !== '') {
+    if (newTitle.trim() !== '' && newDescription.trim() !== '') {
       const newId = goals.length + 1;
-      const newGoalObj = { id: newId, description: newGoal, completed: false };
+      const newGoalObj = { id: newId, title: newTitle, description: newDescription, completed: false };
       setGoals([...goals, newGoalObj]);
-      setNewGoal('');
+      setNewTitle('');
+      setNewDescription('');
+    }
+  };
+
+  const handleChangeHeaderText = () => {
+    if (newHeaderText.trim() !== '') {
+      setHeaderText(newHeaderText);
+      setNewHeaderText('');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Goals</Text>
+      <View style={styles.changeHeaderTextContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter new header text"
+          value={newHeaderText}
+          onChangeText={setNewHeaderText}
+        />
+        <Button title="Change Header" onPress={handleChangeHeaderText} />
+      </View>
+      <Text style={styles.header}>{headerText}</Text>
+      <View style={styles.addGoalContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Title"
+          value={newTitle}
+          onChangeText={(text) => setNewTitle(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Description of the Goal"
+          value={newDescription}
+          onChangeText={(text) => setNewDescription(text)}
+        />
+        <Button title="Add Goal" onPress={handleAddGoal} />
+      </View>
       {goals.map((goal) => (
-        <TouchableOpacity
-          key={goal.id}
-          style={[styles.goalItem, goal.completed && styles.completedGoal]}
-          onPress={() => handleGoalCompletion(goal.id)}
-        >
-          <Text style={styles.goalText}>
-            {goal.description} {goal.completed ? '✓' : '◻️'}
-          </Text>
-        </TouchableOpacity>
+        <View key={goal.id} style={styles.goalContainer}>
+          <Text style={styles.goalText}>{`${goal.title}: ${goal.description}`}</Text>
+          <View style={styles.checkboxContainer}>
+            <TouchableOpacity
+              style={[styles.checkbox, goal.completed && styles.completedCheckbox]}
+              onPress={() => handleGoalCompletion(goal.id)}
+            >
+              {goal.completed && <View style={styles.checkmark} />}
+            </TouchableOpacity>
+          </View>
+        </View>
       ))}
       <View style={styles.progressContainer}>
         <Text style={styles.progressText}>Progress: {Math.round(calculateProgress() * 100)}%</Text>
@@ -54,15 +88,6 @@ const GoalSettingScreen = () => {
           progress={calculateProgress()}
           style={styles.progressBar}
         />
-      </View>
-      <View style={styles.addGoalContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter new goal"
-          value={newGoal}
-          onChangeText={(text) => setNewGoal(text)}
-        />
-        <Button title="Add Goal" onPress={handleAddGoal} />
       </View>
     </View>
   );
@@ -80,23 +105,52 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  goalItem: {
+  changeHeaderTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderWidth: 1,
+  },
+  input: {
+    height: 40,
     borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    marginRight: 10,
     borderRadius: 8,
   },
-  completedGoal: {
-    backgroundColor: '#CFF6FF',
-    borderColor: '#007BFF',
+  addGoalContainer: {
+    marginBottom: 20,
+  },
+  goalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   goalText: {
+    flex: 1,
     fontSize: 16,
-    marginRight: 10,
+  },
+  checkboxContainer: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 4,
+  },
+  completedCheckbox: {
+    backgroundColor: '#007BFF',
+  },
+  checkmark: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 2,
   },
   progressContainer: {
     marginTop: 20,
@@ -109,20 +163,6 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 10,
-  },
-  addGoalContainer: {
-    marginTop: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    marginRight: 10,
-    borderRadius: 8,
   },
 });
 
