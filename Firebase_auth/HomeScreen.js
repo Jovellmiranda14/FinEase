@@ -128,24 +128,27 @@ const HomeScreen = () => {
         />
 
         <View style={styles.cardsContainer}>
+        <TouchableOpacity
+          style={[styles.card, styles.doubleCard]}
+        >
+          <Image
+            source={require('./assets/Carousel1.png')}
+            style={styles.imageCarousel}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
+
+        {filteredCards.length > 0 && filteredCards.map(card => (
           <TouchableOpacity
-            style={[styles.card, styles.doubleCard]}
+            key={card.id}
+            style={[styles.card, card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard]}
+            onPress={() => navigation.navigate(card.name)}
           >
-            <Text style={[styles.cardText, styles.cardTextTop]}>Welcome to Finease! Goals for Today?</Text>
+            <Image source={card.image} style={styles.imageStyle} />
+            <Text style={styles.cardText}>{card.name}</Text>
             <View style={styles.bottomBorderFill} />
           </TouchableOpacity>
-
-          {filteredCards.length > 0 && filteredCards.map(card => (
-            <TouchableOpacity
-              key={card.id}
-              style={[styles.card, card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard]}
-              onPress={() => navigation.navigate(card.name)}
-            >
-              <Image source={card.image} style={styles.imageStyle} />
-              <Text style={styles.cardText}>{card.name}</Text>
-              <View style={styles.bottomBorderFill} />
-            </TouchableOpacity>
-          ))}
+        ))}
         </View>
 {/*-------------------------------- ----Navigation-------------------------------- */}
         <Modal
@@ -414,6 +417,12 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
+  imageCarousel: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+
 });
 
 export default HomeScreen;
