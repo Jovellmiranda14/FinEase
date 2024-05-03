@@ -140,11 +140,11 @@ const Userprofile = ({ navigation }) => {
         throw new Error('User not logged in.');
       }
 
-      console.log('User logged out successfully!');
+      // console.log('User logged out successfully!');
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      // console.error('Logout error:', error);
     }
   };
   useEffect(() => {
@@ -221,7 +221,7 @@ const Userprofile = ({ navigation }) => {
         const downloadURL = await getDownloadURL(storageReference);
         setProfilePicture(downloadURL);
       } catch (error) {
-        console.error('Error fetching profile picture:', error);
+        // console.error('Error fetching profile picture:', error);
       }
     };
 

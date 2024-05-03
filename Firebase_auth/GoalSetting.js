@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ProgressBarAndroid, TextInput, Button } from 'react-native';
-//Testing
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Button } from 'react-native';
+
 const GoalSettingScreen = () => {
   const [headerText, setHeaderText] = useState('My Goals');
-  const [goals, setGoals] = useState([
-    { id: 1, title: 'Goal 1', description: 'Complete task 1', completed: false },
-  ]);
+  const [goals, setGoals] = useState([  ]);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newHeaderText, setNewHeaderText] = useState('');
@@ -20,7 +18,7 @@ const GoalSettingScreen = () => {
   const calculateProgress = () => {
     const totalGoals = goals.length;
     const completedGoals = goals.filter((goal) => goal.completed).length;
-    return totalGoals > 0 ? completedGoals / totalGoals : 0;
+    return totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
   };
 
   const handleAddGoal = () => {
@@ -42,7 +40,7 @@ const GoalSettingScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.changeHeaderTextContainer}>
+      <View style={styles.changeHeaderTextContainer}>
         <TextInput
           style={styles.input}
           placeholder="Enter new header text"
@@ -50,7 +48,7 @@ const GoalSettingScreen = () => {
           onChangeText={setNewHeaderText}
         />
         <Button title="Change Header" onPress={handleChangeHeaderText} />
-      </View> */}
+      </View>
       <Text style={styles.header}>{headerText}</Text>
       <View style={styles.addGoalContainer}>
         <TextInput
@@ -70,24 +68,16 @@ const GoalSettingScreen = () => {
       {goals.map((goal) => (
         <View key={goal.id} style={styles.goalContainer}>
           <Text style={styles.goalText}>{`${goal.title}: ${goal.description}`}</Text>
-          <View style={styles.checkboxContainer}>
-            <TouchableOpacity
-              style={[styles.checkbox, goal.completed && styles.completedCheckbox]}
-              onPress={() => handleGoalCompletion(goal.id)}
-            >
-              {goal.completed && <View style={styles.checkmark} />}
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={[styles.checkbox, goal.completed && styles.completedCheckbox]}
+            onPress={() => handleGoalCompletion(goal.id)}
+          >
+            {goal.completed && <View style={styles.checkmark} />}
+          </TouchableOpacity>
         </View>
       ))}
       <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>Progress: {Math.round(calculateProgress() * 100)}%</Text>
-        <ProgressBarAndroid
-          styleAttr="Horizontal"
-          indeterminate={false}
-          progress={calculateProgress()}
-          style={styles.progressBar}
-        />
+        <Text style={styles.progressText}>Progress: {Math.round(calculateProgress())}%</Text>
       </View>
     </View>
   );
@@ -130,12 +120,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
   },
-  checkboxContainer: {
-    width: 30,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   checkbox: {
     width: 20,
     height: 20,
@@ -160,9 +144,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 10,
     textAlign: 'center',
-  },
-  progressBar: {
-    height: 10,
   },
 });
 

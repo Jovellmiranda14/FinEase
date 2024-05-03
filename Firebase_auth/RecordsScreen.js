@@ -67,36 +67,55 @@
       setSource(text);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       let moneyValue = parseFloat(money);
       if (isNaN(moneyValue) || money.trim() === '') {
         moneyValue = 0.00;
       }
-
+    
       const newRecord = {
-        id: recordId, // Assign a unique ID to each record
-        money: moneyValue, // Convert money to float
+        id: recordId,
+        money: moneyValue,
         source: source,
-        date: date.toDateString(),
+        date: date.toISOString(), // Save date as ISO string for consistency
         category: category,
       };
-
-      setRecords([...records, newRecord]);
-      setRecordId(recordId + 1); // Increment record ID
-
-      if (category === 'Income') {
-        setTotalMoney(totalMoney + moneyValue);
-        setTotalSaved(totalSaved + moneyValue);
-      } else {
-        setTotalMoney(totalMoney - moneyValue);
-        setTotalSpent(totalSpent + moneyValue);
+    
+      try {
+        // Get a reference to the database
+        const database = getDatabase();
+    
+        // Reference to the user's records in the database (replace 'userId' with the actual user ID)
+        const userRecordsRef = ref(database, `users/${userId}/records`);
+    
+        // Push the new record to the database under the user's records path
+        const newRecordRef = await push(userRecordsRef, newRecord);
+    
+        // Update local state with the new record
+        setRecords([...records, { ...newRecord, id: newRecordRef.key }]); // Use the database-generated key as the record ID
+    
+        // Update total money based on category
+        if (category === 'Income') {
+          setTotalMoney(totalMoney + moneyValue);
+          setTotalSaved(totalSaved + moneyValue);
+        } else {
+          setTotalMoney(totalMoney - moneyValue);
+          setTotalSpent(totalSpent + moneyValue);
+        }
+    
+        // Update date to current date
+        const currentDate = new Date();
+        setDate(currentDate);
+    
+        // Clear input fields
+        setMoney('');
+        setSource('');
+    
+        // Log success message
+        console.log('Record saved successfully to database.');
+      } catch (error) {
+        console.error('Error saving record to database:', error);
       }
-
-      const currentDate = new Date();
-      setDate(currentDate);
-
-      setMoney('');
-      setSource('');
     };
 
     const handleDelete = (id, money, category) => {
@@ -204,7 +223,7 @@
         const url = await getDownloadURL(profilePictureRef);
         setProfilePicture(url);
       } catch (error) {
-        console.error('Error fetching profile picture:', error);
+        // console.error('Error fetching profile picture:', error);
         setProfilePicture(null); // Reset profile picture if fetch fails
       }
     };

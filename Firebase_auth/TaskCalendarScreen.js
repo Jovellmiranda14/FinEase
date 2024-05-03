@@ -10,7 +10,7 @@ const getCurrentDate = () => {
   const year = currentDate.getFullYear().toString();
   return { month, day, year };
 };
-const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onDelete }) => {
+const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onDelete, disableDelete }) => {
   const total = series.reduce((acc, value) => acc + value, 0);
   const [chartTitle, setChartTitle] = useState(title);
   const [chartDescription, setChartDescription] = useState(description);
@@ -26,7 +26,7 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
 
   return (
     <View style={styles.chartContainer}>
-      <Text style={styles.title}>{chartTitle}</Text>
+
       <PieChart
         widthAndHeight={widthAndHeight}
         series={series}
@@ -101,9 +101,12 @@ const TaskCalendar = () => {
   };
 
   const handleDeleteChart = (index) => {
-    const updatedCharts = [...charts];
-    updatedCharts.splice(index, 1);
-    setCharts(updatedCharts);
+    if (charts.length > 1) { // Only allow deletion if there's more than one chart
+      const updatedCharts = [...charts];
+      updatedCharts.splice(index, 1);
+      setCharts(updatedCharts);
+    } else {
+    }
   };
 
   const totalSeries = charts.reduce((acc, chart) => {
@@ -113,21 +116,13 @@ const TaskCalendar = () => {
   // Filter charts based on selected month and day
   const filteredCharts = useMemo(() => {
     return charts.filter((chart) => {
-      // You may need to adjust the logic here based on your requirements
-      // For demonstration, we're assuming all charts belong to January 1, 2024
+
       return selectedMonth === month && selectedDay === day && selectedYear === year;
     });
   }, [charts, selectedMonth, selectedDay, selectedYear]);
 
 
-  
-  const handleClearCharts = () => {
-    const clearedCharts = charts.map((chart) => ({
-      ...chart,
-      series: chart.series.map(() => 0) // Set all series values to 0
-    }));
-    setCharts(clearedCharts);
-  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <SummaryChart
@@ -177,18 +172,19 @@ const TaskCalendar = () => {
           ))}
         </Picker>
         {filteredCharts.map((chart, index) => (
-          <TestChart
-            key={index}
-            widthAndHeight={150}  // Size of the Circle
-            series={chart.series}
-            sliceColor={chart.sliceColor}
-            title={chart.title}
-            description={chart.description}
-            onDelete={() => handleDeleteChart(index)} // Pass delete function
-          />
-        ))}
+            <TestChart
+              key={index}
+              widthAndHeight={150}
+              series={chart.series}
+              sliceColor={chart.sliceColor}
+
+
+              onDelete={() => handleDeleteChart(index)}
+              disableDelete={charts.length === 1} // Pass disableDelete prop based on number of charts
+            />
+          ))}
         <Button title="Add Chart" onPress={handleUpdateChart} />
-        <Button title="Clear Charts" onPress={handleClearCharts} />
+
       </View>
     </ScrollView>
   );

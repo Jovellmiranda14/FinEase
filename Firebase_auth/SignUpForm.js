@@ -99,7 +99,7 @@ const SignUpForm = ({ onBackToLogin }) => {
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry={hidePassword} // Use secureTextEntry to hide password
+             secureTextEntry={hidePassword}  // Use secureTextEntry to hide password
           />
           <TouchableOpacity onPress={togglePasswordVisibility}>
             <Image
