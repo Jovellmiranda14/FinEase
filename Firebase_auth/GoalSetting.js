@@ -42,7 +42,7 @@ const GoalSettingScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.changeHeaderTextContainer}>
+      {/* <View style={styles.changeHeaderTextContainer}>
         <TextInput
           style={styles.input}
           placeholder="Enter new header text"
@@ -50,7 +50,7 @@ const GoalSettingScreen = () => {
           onChangeText={setNewHeaderText}
         />
         <Button title="Change Header" onPress={handleChangeHeaderText} />
-      </View>
+      </View> */}
       <Text style={styles.header}>{headerText}</Text>
       <View style={styles.addGoalContainer}>
         <TextInput
