@@ -1,7 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import { View, Button, StyleSheet, ScrollView, Text, TextInput } from 'react-native';
+import React, { useState,useEffect, useMemo, useRef} from 'react';
+import { View, Button, StyleSheet, Animated,ScrollView, Text, Modal, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import PieChart from 'react-native-pie-chart';
 import { Picker } from '@react-native-picker/picker';
+import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
+import { getDatabase, ref, onValue } from '@firebase/database';
+import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
+import { LinearGradient } from 'expo-linear-gradient';
+
+
 
 const getCurrentDate = () => {
   const currentDate = new Date();
@@ -48,7 +54,7 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
         placeholder="Enter description"
         value={chartDescription}
       />
-      <Button title="Delete" onPress={onDelete} />
+      {/* <Button title="Delete" onPress={onDelete} /> */}
     </View>
   );
 };
@@ -85,6 +91,14 @@ const TaskCalendar = () => {
   const [selectedMonth, setSelectedMonth] = useState(month);
   const [selectedDay, setSelectedDay] = useState(day);
   const [selectedYear, setSelectedYear] = useState(year);
+  const [profilePicture, setProfilePicture] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const slideAnim = useRef(new Animated.Value(-300)).current;
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const [user, setUser] = useState(null);
+
+
   const [charts, setCharts] = useState([
     { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], title: 'Chart 1', description: 'Description for Chart 1' }
   ]);
@@ -94,7 +108,7 @@ const TaskCalendar = () => {
     return randomSeries;
   };
   const handleUpdateChart = () => {
-    // For demonstration, let's assume new series values are retrieved from elsewhere
+ 
     const newSeries = generateRandomSeries();
     const newSliceColor = ['#000000', '#FFFFFF']; // Two colors for demonstration
     setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }]);
@@ -121,72 +135,239 @@ const TaskCalendar = () => {
     });
   }, [charts, selectedMonth, selectedDay, selectedYear]);
 
+  const database = getDatabase();
+  const toggleSidebar = () => {
+    if (isSidebarOpen) {
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setIsSidebarOpen(false));
+    } else {
+      setIsSidebarOpen(true);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName || '');
+            setLastName(lastName || '');
+            // Assuming fetchUserProfile fetches the profile picture based on user ID
+            fetchUserProfile(user.uid, setProfilePicture);
+          }
+        });
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [database]);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName);
+            setLastName(lastName);
+          }
+        });
+        // Fetch profile picture URL when user is logged in
+        fetchUserProfile(user.uid, setProfilePicture);
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [database]);
 
+  const fetchUserProfile = async (uid, setProfilePicture) => {
+    try {
+      const storage = getStorage();
+      const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
+      const url = await getDownloadURL(profilePictureRef);
+      setProfilePicture(url);
+    } catch (error) {
+      // console.error('Error fetching profile picture:', error);
+      setProfilePicture(null); // Reset profile picture if fetch fails
+    }
+  };
 
+  const handleAuthentication = async () => {
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('User not logged in.');
+      }
+
+      console.log('User logged out successfully!');
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
   return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      <SummaryChart
-        widthAndHeight={200} // Size of the Circle
-        series={totalSeries}
-        sliceColor={['#FF5733', '#33FF57']} // Two colors for demonstration
-      />
-
+    <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
-        <Text>Month:</Text>
-        <Picker
-          selectedValue={selectedMonth}
-          onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}
-          style={{ height: 50, width: 150 }}
-        >
-          <Picker.Item label="January" value="January" />
-          <Picker.Item label="February" value="February" />
-          <Picker.Item label="March" value="March" />
-          <Picker.Item label="April" value="April" />
-          <Picker.Item label="May" value="May" />
-          <Picker.Item label="June" value="June" />
-          <Picker.Item label="July" value="July" />
-          <Picker.Item label="August" value="August" />
-          <Picker.Item label="September" value="September" />
-          <Picker.Item label="October" value="October" />
-          <Picker.Item label="November" value="November" />
-          <Picker.Item label="December" value="December" />
-        </Picker>
-        <Text>Day:</Text>
-        <Picker
-          selectedValue={selectedDay}
-          onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
-          style={{ height: 50, width: 150 }}
-        >
-          {Array.from({ length: 31 }, (_, index) => index + 1).map((day) => (
-            <Picker.Item key={day} label={day.toString()} value={day.toString()} />
-          ))}
-        </Picker>
-        <Text>Year:</Text>
-        <Picker
-          selectedValue={selectedYear}
-          onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}
-          style={{ height: 50, width: 150 }}
-        >
-          {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
-            <Picker.Item key={year} label={year.toString()} value={year.toString()} />
-          ))}
-        </Picker>
-        {filteredCharts.map((chart, index) => (
-            <TestChart
-              key={index}
-              widthAndHeight={150}
-              series={chart.series}
-              sliceColor={chart.sliceColor}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+            <Text style={styles.sidebarButtonText}>≡</Text>
+          </TouchableOpacity>
+          <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            {profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+            )}
+          </TouchableOpacity>
+        </View>
+  
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          {/* Render SummaryChart */}
+          <SummaryChart
+            widthAndHeight={200} // Size of the Circle
+            series={charts[0].series}
+            sliceColor={charts[0].sliceColor} 
+          />
+  
+          <View style={styles.formContainer}>
+            {/* Month Picker */}
+            <Text>Month:</Text>
+            <Picker
+              selectedValue={selectedMonth}
+              onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}
+              style={styles.picker}
+            >
+              {Array.from({ length: 12 }, (_, index) => (
+                <Picker.Item key={index} label={new Date(2024, index).toLocaleString('en-US', { month: 'long' })} value={index + 1} />
+              ))}
+            </Picker>
+  
+            {/* Day Picker */}
+            <Text>Day:</Text>
+            <Picker
+              selectedValue={selectedDay}
+              onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+              style={styles.picker}
+            >
+              {Array.from({ length: 31 }, (_, index) => (
+                <Picker.Item key={index} label={(index + 1).toString()} value={index + 1} />
+              ))}
+            </Picker>
+  
+            {/* Year Picker */}
+            <Text>Year:</Text>
+            <Picker
+              selectedValue={selectedYear}
+              onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}
+              style={styles.picker}
+            >
+              {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
+                <Picker.Item key={year} label={year.toString()} value={year.toString()} />
+              ))}
+            </Picker>
+  
+            {/* Render TestCharts */}
+            {charts.map((chart, index) => (
+              <TestChart
+                key={index}
+                widthAndHeight={150}
+                series={chart.series}
+                sliceColor={chart.sliceColor}
+                onDelete={() => handleDeleteChart(index)}
+                disableDelete={charts.length === 1} 
+                // Disable delete button if only one chart is present
+                // Temporary part
+              />
+            ))}
+            <Button title="Add Chart" onPress={handleUpdateChart} />
+          </View>
+        </ScrollView>
 
+       <Modal
+       animationType="none"
+       transparent={true}
+       visible={isSidebarOpen}
+       onRequestClose={toggleSidebar}
+     >
+       <LinearGradient
+         colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+         style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+       >
+     <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+       <Image source={require('./assets/left_arrow.png')} />
+     </TouchableOpacity>
+         {profilePicture ? (
+           <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+         ) : (
+           <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+         )}
+         <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+         <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+         <View style={styles.buttonContainer}>
+                 <Text style={styles.buttonText}>Home</Text>
+               </View>
+       </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Records</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>TaskCalendar</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Onlinebanking')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Online Banking</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Rewards</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Goal Setting</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Investment</Text>
+           </View>
+         </TouchableOpacity>
+           <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+             <Text style={styles.buttonText}>Logout</Text>
+           </TouchableOpacity>
 
-              onDelete={() => handleDeleteChart(index)}
-              disableDelete={charts.length === 1} // Pass disableDelete prop based on number of charts
-            />
-          ))}
-        <Button title="Add Chart" onPress={handleUpdateChart} />
-
-      </View>
-    </ScrollView>
+       </LinearGradient>
+     </Modal>
+     </View>
+     </ImageBackground>
   );
 };
 
@@ -228,6 +409,86 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 5,
     paddingLeft: 10,
+  }, //Sidebar
+  logo: {
+    height: 50,
+    width: 50,
+    top: 10,
+  },
+  userIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    marginRight: 10,
+    top: 10,
+  },
+  sidebarButtonText: {
+    fontSize: 35,
+    color: 'white',
+    top: 10,
+  },
+  
+  sidebarButton: {
+    padding: 10,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 22,
+    left: 22,
+    padding: 1,
+    borderRadius: 5,
+    zIndex: 1,
+  },
+  sidebarItem: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+  },
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
+  },
+      sidebar: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 300,
+    backgroundColor: '#fff',
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonContainer: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 10,
+    marginBottom: 5,
+    backgroundColor: 'transparent',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },    
+  sidebarName: {
+    marginBottom: 10,
+    fontSize: 18, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+    top: -35,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
 });
 

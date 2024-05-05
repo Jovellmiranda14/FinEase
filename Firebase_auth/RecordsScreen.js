@@ -302,7 +302,7 @@
               <Text style={styles.Source}>Source: {record.source}</Text>
               <Text style={styles.Date}>Date: {formatDate(record.date)}</Text>
               <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>
-                <Text style={styles.deleteButton}>Delete</Text>
+                {/* <Text style={styles.deleteButton}>Delete</Text> */}
               </TouchableOpacity>
             </View>
           ))}
@@ -450,19 +450,13 @@
       justifyContent: 'center',
       alignItems: 'center',
     },
-    closeButton: {
-      marginTop: 20,
-      padding: 10,
-      backgroundColor: '#f0f0f0',
-      borderRadius: 5,
-      zIndex: 1,
-    },
     sidebarItem: {
       marginBottom: 10, 
       color: 'white',
       textAlign: "center",
       width: '100%',
-    },  backgroundImage: {
+    },  
+    backgroundImage: {
       flex: 1,
       resizeMode: 'cover',
       justifyContent: 'center',
@@ -519,6 +513,7 @@
       borderRadius: 5,
       zIndex: 1,
     },
+
   });
 
 

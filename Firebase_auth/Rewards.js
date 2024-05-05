@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Modal, Butto
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Rewards = ({ navigation }) => {
   const [profilePicture, setProfilePicture] = useState(null);
@@ -12,91 +13,114 @@ const Rewards = ({ navigation }) => {
   const [lastName, setLastName] = useState(null);
   const [user, setUser] = useState(null);
 
-  const database = getDatabase();
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      if (user) {
-        const userRef = ref(database, `users/${user.uid}`);
-        onValue(userRef, (snapshot) => {
-          const userData = snapshot.val();
-          if (userData) {
-            const { firstName, lastName } = userData;
-            setFirstName(firstName);
-            setLastName(lastName);
-          }
-        });
-        // Fetch profile picture URL when user is logged in
-        fetchUserProfile(user.uid, setProfilePicture);
+    const database = getDatabase();
+    const toggleSidebar = () => {
+      if (isSidebarOpen) {
+        Animated.timing(slideAnim, {
+          toValue: -300,
+          duration: 300,
+          useNativeDriver: false,
+        }).start(() => setIsSidebarOpen(false));
       } else {
-        // Clear profile picture URL when user is logged out
-        setProfilePicture(null);
+        setIsSidebarOpen(true);
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
       }
-    });
-    return () => unsubscribe();
-  }, [database]);
-
-  const handleAuthentication = async () => {
-    try {
+    };
+    useEffect(() => {
       const auth = getAuth();
-      const user = auth.currentUser;
-      if (!user) {
-        throw new Error('User not logged in.');
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        if (user) {
+          const userRef = ref(database, `users/${user.uid}`);
+          onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+              const { firstName, lastName } = userData;
+              setFirstName(firstName || '');
+              setLastName(lastName || '');
+              // Assuming fetchUserProfile fetches the profile picture based on user ID
+              fetchUserProfile(user.uid, setProfilePicture);
+            }
+          });
+        } else {
+          // Clear profile picture URL when user is logged out
+          setProfilePicture(null);
+        }
+      });
+    
+      return () => unsubscribe();
+    }, [database]);
+    useEffect(() => {
+      const auth = getAuth();
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        if (user) {
+          const userRef = ref(database, `users/${user.uid}`);
+          onValue(userRef, (snapshot) => {
+            const userData = snapshot.val();
+            if (userData) {
+              const { firstName, lastName } = userData;
+              setFirstName(firstName);
+              setLastName(lastName);
+            }
+          });
+          // Fetch profile picture URL when user is logged in
+          fetchUserProfile(user.uid, setProfilePicture);
+        } else {
+          // Clear profile picture URL when user is logged out
+          setProfilePicture(null);
+        }
+      });
+      return () => unsubscribe();
+    }, [database]);
+  
+    const fetchUserProfile = async (uid, setProfilePicture) => {
+      try {
+        const storage = getStorage();
+        const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
+        const url = await getDownloadURL(profilePictureRef);
+        setProfilePicture(url);
+      } catch (error) {
+        // console.error('Error fetching profile picture:', error);
+        setProfilePicture(null); // Reset profile picture if fetch fails
       }
-
-      console.log('User logged out successfully!');
-      await signOut(auth);
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
-  const toggleSidebar = () => {
-    if (isSidebarOpen) {
-      Animated.timing(slideAnim, {
-        toValue: -300,
-        duration: 300,
-        useNativeDriver: false,
-      }).start(() => setIsSidebarOpen(false));
-    } else {
-      setIsSidebarOpen(true);
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    }
-  };
-
-  const fetchUserProfile = async (uid, setProfilePicture) => {
-    try {
-      const storage = getStorage();
-      const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
-      const url = await getDownloadURL(profilePictureRef);
-      setProfilePicture(url);
-    } catch (error) {
-      console.error('Error fetching profile picture:', error);
-      setProfilePicture(null); // Reset profile picture if fetch fails
-    }
-  };
+    };
+  
+    const handleAuthentication = async () => {
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) {
+          throw new Error('User not logged in.');
+        }
+  
+        console.log('User logged out successfully!');
+        await signOut(auth);
+        setUser(null);
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    };
+   
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
-          <Text style={styles.sidebarButtonText}>≡</Text>
-        </TouchableOpacity>
-        <Text style={styles.logo}>Logo</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-          )}
-        </TouchableOpacity>
-      </View>
+    <View style={styles.header}>
+            <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+              <Text style={styles.sidebarButtonText}>≡</Text>
+            </TouchableOpacity>
+            <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            {profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+            )}
+            </TouchableOpacity>
+          </View>
 
       <View style={styles.rewardsContainer}>
         <Text>Rewards</Text>
@@ -104,47 +128,66 @@ const Rewards = ({ navigation }) => {
       </View>
 
       <Modal
-          animationType="none"
-          transparent={true}
-          visible={isSidebarOpen}
-          onRequestClose={toggleSidebar}>
+       animationType="none"
+       transparent={true}
+       visible={isSidebarOpen}
+       onRequestClose={toggleSidebar}
+     >
+       <LinearGradient
+         colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+         style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+       >
+     <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+       <Image source={require('./assets/left_arrow.png')} />
+     </TouchableOpacity>
+         {profilePicture ? (
+           <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+         ) : (
+           <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+         )}
+         <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+         <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+         <View style={styles.buttonContainer}>
+                 <Text style={styles.buttonText}>Home</Text>
+               </View>
+       </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Records</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>TaskCalendar</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Onlinebanking')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Online Banking</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Rewards</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Goal Setting</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Investment</Text>
+           </View>
+         </TouchableOpacity>
+           <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+             <Text style={styles.buttonText}>Logout</Text>
+           </TouchableOpacity>
 
-          <Animated.View style={[styles.sidebar, { left: slideAnim }]}>
-            <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-              <Text style={styles.closeButton}>≤</Text>
-            </TouchableOpacity>
-            {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-          )}
-            <Text style={styles.sidebarItem}>{firstName} {lastName}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
-            <Text>Home</Text>
-          </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-              <Text>Records</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
-              <Text>TaskCalendar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('OnlineBanking')} style={styles.sidebarItem}>
-              <Text>Online Banking</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
-              <Text>Rewards</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('GoalSetting')} style={styles.sidebarItem}>
-              <Text>Goal Setting</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={styles.sidebarItem}>
-              <Text>Investment</Text>
-            </TouchableOpacity>
-    
-              <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
-
-          </Animated.View>
-        </Modal>
+       </LinearGradient>
+     </Modal>
+     
     </View>
   );
 };
@@ -161,52 +204,86 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
   },
+  logo: {
+    height: 50,
+    width: 50,
+    top: 10,
+  },
+  userIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    marginRight: 10,
+    top: 10,
+  },
+  sidebarButtonText: {
+    fontSize: 35,
+    color: 'white',
+    top: 10,
+  },
+  
   sidebarButton: {
     padding: 10,
   },
-  sidebarButtonText: {
-    fontSize: 25,
-    color: 'black',
+  closeButton: {
+    position: 'absolute',
+    top: 22,
+    left: 22,
+    padding: 1,
+    borderRadius: 5,
+    zIndex: 1,
   },
-  logo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'black',
+  sidebarItem: {
+    marginBottom: 10, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
   },
-  rewardsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  sidebarIcon: {
+    width: 85,
+    height: 85,
+    borderRadius: 55,
+    marginRight: 4,
+    top: -45,
   },
-  sidebar: {
+      sidebar: {
     position: 'absolute',
     top: 0,
     bottom: 0,
-    left: 0,
     width: 300,
     backgroundColor: '#fff',
     padding: 20,
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
-  closeButton: {
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
+  buttonContainer: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 10,
+    marginBottom: 5,
+    backgroundColor: 'transparent',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },    
+  sidebarName: {
     marginBottom: 10,
+    fontSize: 18, 
+    color: 'white',
+    textAlign: "center",
+    width: '100%',
+    top: -35,
   },
-  closeButtonText: {
-    fontSize: 20,
-  },
-  sidebarItem: {
-    marginBottom: 10,
-  },
-  userIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 10,
-  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+  }
 });
 
 export default Rewards;
