@@ -86,7 +86,7 @@ const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
   );
 };
 
-const TaskCalendar = () => {
+const TaskCalendar = ({ navigation}) => {
   const { month, day, year } = getCurrentDate();
   const [selectedMonth, setSelectedMonth] = useState(month);
   const [selectedDay, setSelectedDay] = useState(day);
