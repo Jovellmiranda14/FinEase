@@ -87,8 +87,8 @@ const App = () => {
             <Stack.Screen name="Profile" component={Userprofile}options={{ headerShown: false }}/>
             <Stack.Screen name="Goal Setting" component={GoalSetting} />
             <Stack.Screen name="Online Banking" component={Onlinebanking} />
-            <Stack.Screen name="Investment" component={Investment} />
-            <Stack.Screen name="Rewards" component={Rewards}/>
+            <Stack.Screen name="Investment" component={Investment} options={{ headerShown: false }}/>
+            <Stack.Screen name="Rewards" component={Rewards}options={{ headerShown: false }}/>
           </>
         ) : (
           <Stack.Screen name="Auth" options={{ headerShown: false }}>
