@@ -40,15 +40,6 @@ const GoalSettingScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.changeHeaderTextContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter new header text"
-          value={newHeaderText}
-          onChangeText={setNewHeaderText}
-        />
-        <Button title="Change Header" onPress={handleChangeHeaderText} />
-      </View>
       <Text style={styles.header}>{headerText}</Text>
       <View style={styles.addGoalContainer}>
         <TextInput
@@ -76,9 +67,6 @@ const GoalSettingScreen = () => {
           </TouchableOpacity>
         </View>
       ))}
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>Progress: {Math.round(calculateProgress())}%</Text>
-      </View>
     </View>
   );
 };

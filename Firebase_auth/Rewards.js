@@ -161,7 +161,7 @@ const Rewards = ({ navigation }) => {
              <Text style={styles.buttonText}>TaskCalendar</Text>
            </View>
          </TouchableOpacity>
-         <TouchableOpacity onPress={() => navigation.navigate('Onlinebanking')} style={styles.sidebarItem}>
+         <TouchableOpacity onPress={() => navigation.navigate('Online Banking')} style={styles.sidebarItem}>
            <View style={styles.buttonContainer}>
              <Text style={styles.buttonText}>Online Banking</Text>
            </View>
