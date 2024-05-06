@@ -1,21 +1,155 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image, Modal, ImageBackground } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState,useEffect, useMemo, useRef} from 'react';
+import { View, Button, StyleSheet, Animated,ScrollView, Text, Modal, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
+import PieChart from 'react-native-pie-chart';
+import { Picker } from '@react-native-picker/picker';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 import { LinearGradient } from 'expo-linear-gradient';
 
-const TaskCalendarScreen = () => {
-  const navigation = useNavigation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [user, setUser] = useState(null);
+
+
+const getCurrentDate = () => {
+  const currentDate = new Date();
+  const month = currentDate.toLocaleString('default', { month: 'long' });
+  const day = currentDate.getDate().toString();
+  const year = currentDate.getFullYear().toString();
+  return { month, day, year };
+};
+const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onDelete, disableDelete }) => {
+  const total = series.reduce((acc, value) => acc + value, 0);
+  const [chartTitle, setChartTitle] = useState(title);
+  const [chartDescription, setChartDescription] = useState(description);
+
+  const renderPercentageLabels = () => {
+    const percentages = series.map((value) => ((value / total) * 100).toFixed(2));
+    return series.map((value, index) => (
+      <Text key={index}>
+        {percentages[index]}%
+      </Text>
+    ));
+  };
+
+  return (
+    <View>
+
+      <PieChart
+        widthAndHeight={widthAndHeight}
+        series={series}
+        sliceColor={sliceColor}
+        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
+        coverFill={'#FFF'}
+      />
+      <View>{renderPercentageLabels()}</View>
+      <TextInput
+        onChangeText={text => setChartTitle(text)}
+        placeholder="Enter title"
+        value={chartTitle}
+      />
+      <Text>{chartDescription}</Text>
+      <TextInput
+        onChangeText={text => setChartDescription(text)}
+        placeholder="Enter description"
+        value={chartDescription}
+      />
+      {/* <Button title="Delete" onPress={onDelete} /> */}
+    </View>
+  );
+};
+
+const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
+  const total = series.reduce((acc, value) => acc + value, 0);
+
+  const renderPercentageLabels = () => {
+    const percentages = series.map((value) => ((value / total) * 100).toFixed(2));
+    return series.map((value, index) => (
+      <Text key={index}>
+        {percentages[index]}%
+      </Text>
+    ));
+  };
+
+  return (
+    <View>
+      <Text>Summary</Text>
+      <PieChart
+        widthAndHeight={widthAndHeight}
+        series={series}
+        sliceColor={sliceColor}
+        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
+        coverFill={'#FFF'}
+      />
+      <View>{renderPercentageLabels()}</View>
+    </View>
+  );
+};
+
+const TaskCalendar = ({ navigation}) => {
+  const { month, day, year } = getCurrentDate();
+  const [selectedMonth, setSelectedMonth] = useState(month);
+  const [selectedDay, setSelectedDay] = useState(day);
+  const [selectedYear, setSelectedYear] = useState(year);
   const [profilePicture, setProfilePicture] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const slideAnim = useRef(new Animated.Value(-300)).current;
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
+    const [user, setUser] = useState(null);
+
+
+  const [charts, setCharts] = useState([
+    { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], title: 'Chart 1', description: 'Description for Chart 1' }
+  ]);
+  const generateRandomSeries = () => {
+    // Generate random numbers for the series
+    const randomSeries = Array.from({ length: 2 }, () => Math.floor(Math.random() * 100));
+    return randomSeries;
+  };
+  const handleUpdateChart = () => {
+ 
+    const newSeries = generateRandomSeries();
+    const newSliceColor = ['#000000', '#FFFFFF']; // Two colors of Chart
+    setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }]);
+  };
+
+  const handleDeleteChart = (index) => {
+    if (charts.length > 1) { // Only allow deletion if there's more than one chart
+      const updatedCharts = [...charts];
+      updatedCharts.splice(index, 1);
+      setCharts(updatedCharts);
+    } else {
+    }
+  };
+
+  const totalSeries = charts.reduce((acc, chart) => {
+    return chart.series.map((value, index) => (acc[index] || 0) + value);
+  }, []);
+
+  // Filter charts based on selected month and day
+  const filteredCharts = useMemo(() => {
+    return charts.filter((chart) => {
+
+      return selectedMonth === month && selectedDay === day && selectedYear === year;
+    });
+  }, [charts, selectedMonth, selectedDay, selectedYear]);
 
   const database = getDatabase();
-
+  const toggleSidebar = () => {
+    if (isSidebarOpen) {
+      Animated.timing(slideAnim, {
+        toValue: -300,
+        duration: 300,
+        useNativeDriver: false,
+      }).start(() => setIsSidebarOpen(false));
+    } else {
+      setIsSidebarOpen(true);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -40,12 +174,31 @@ const TaskCalendarScreen = () => {
   
     return () => unsubscribe();
   }, [database]);
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName);
+            setLastName(lastName);
+          }
+        });
+        // Fetch profile picture URL when user is logged in
+        fetchUserProfile(user.uid, setProfilePicture);
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
+      }
+    });
+    return () => unsubscribe();
+  }, [database]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const fetchUserProfile = async (uid) => {
+  const fetchUserProfile = async (uid, setProfilePicture) => {
     try {
       const storage = getStorage();
       const profilePictureRef = storageRef(storage, `profile-pictures/${uid}/profile-picture.jpg`);
@@ -72,11 +225,9 @@ const TaskCalendarScreen = () => {
       console.error('Logout error:', error);
     }
   };
-
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
-      {/*-------------------------------- ----Header-------------------------------- */}
-      <View style={styles.container}> 
+      <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
@@ -90,74 +241,131 @@ const TaskCalendarScreen = () => {
             )}
           </TouchableOpacity>
         </View>
-        {/*-------------------------------- ----Header-------------------------------- */}
-        {/* Sidebar Menu */}
-        <Modal
-          animationType="none"
-          transparent={true}
-          visible={isSidebarOpen}
-          onRequestClose={toggleSidebar}
-        >
-          <LinearGradient
-            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
-            style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
-          >
-            <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-              <Image source={require('./assets/left_arrow.png')} />
-            </TouchableOpacity>
-            {profilePicture ? (
-              <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
-            ) : (
-              <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
-            )}
-            <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
-            {/* Navigation items */}
-            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Home</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Records</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>TaskCalendar</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Online Banking')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Online Banking</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Rewards</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Goal Setting</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Investment</Text>
-              </View>
-            </TouchableOpacity>
-            {/* Logout button */}
-            {user ? (
-              <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
-            ) : null}
-          </LinearGradient>
-        </Modal>
-        {/* Sidebar Menu */}
-      </View>
-    </ImageBackground>
+  
+        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+          {/* Render SummaryChart */}
+          <SummaryChart
+            widthAndHeight={200} // Size of the Circle
+            series={charts[0].series}
+            sliceColor={charts[0].sliceColor} 
+          />
+  
+          <View>
+            {/* Month Picker */}
+            <Text>Month:</Text>
+            <Picker
+              selectedValue={selectedMonth}
+              onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}
+              
+            >
+              {Array.from({ length: 12 }, (_, index) => (
+                <Picker.Item key={index} label={new Date(2024, index).toLocaleString('en-US', { month: 'long' })} value={index + 1} />
+              ))}
+            </Picker>
+  
+            {/* Day Picker */}
+            <Text>Day:</Text>
+            <Picker
+              selectedValue={selectedDay}
+              onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+              
+            >
+              {Array.from({ length: 31 }, (_, index) => (
+                <Picker.Item key={index} label={(index + 1).toString()} value={index + 1} />
+              ))}
+            </Picker>
+  
+            {/* Year Picker */}
+            <Text>Year:</Text>
+            <Picker
+              selectedValue={selectedYear}
+              onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}
+
+            >
+              {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
+                <Picker.Item key={year} label={year.toString()} value={year.toString()} />
+              ))}
+            </Picker>
+  
+            {/* Render TestCharts */}
+            {charts.map((chart, index) => (
+              <TestChart
+                key={index}
+                widthAndHeight={150}
+                series={chart.series}
+                sliceColor={chart.sliceColor}
+                onDelete={() => handleDeleteChart(index)}
+                disableDelete={charts.length === 1} 
+                // Disable delete button if only one chart is present
+                // Temporary part
+              />
+            ))}
+            <Button title="Add Chart" onPress={handleUpdateChart} />
+          </View>
+        </ScrollView>
+
+       <Modal
+       animationType="none"
+       transparent={true}
+       visible={isSidebarOpen}
+       onRequestClose={toggleSidebar}
+     >
+       <LinearGradient
+         colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+         style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+       >
+     <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+       <Image source={require('./assets/left_arrow.png')} />
+     </TouchableOpacity>
+         {profilePicture ? (
+           <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
+         ) : (
+           <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+         )}
+         <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+         <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+         <View style={styles.buttonContainer}>
+                 <Text style={styles.buttonText}>Home</Text>
+               </View>
+       </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Records</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>TaskCalendar</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Online Banking')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Online Banking</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Rewards</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Goal Setting</Text>
+           </View>
+         </TouchableOpacity>
+         <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+           <View style={styles.buttonContainer}>
+             <Text style={styles.buttonText}>Investment</Text>
+           </View>
+         </TouchableOpacity>
+           <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+             <Text style={styles.buttonText}>Logout</Text>
+           </TouchableOpacity>
+
+       </LinearGradient>
+     </Modal>
+     </View>
+     </ImageBackground>
   );
 };
 
@@ -257,4 +465,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TaskCalendarScreen;
+
+export default TaskCalendar;
