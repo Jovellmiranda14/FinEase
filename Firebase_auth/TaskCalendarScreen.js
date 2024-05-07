@@ -22,14 +22,21 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
   const [chartDescription, setChartDescription] = useState(description);
 
   const renderPercentageLabels = () => {
-    const percentages = series.map((value) => ((value / total) * 100).toFixed(2));
-    return series.map((value, index) => (
-      <Text key={index}>
-        {percentages[index]}%
+    // Find the index of the largest value in the series array
+    const maxIndex = series.reduce((maxIndex, currentValue, currentIndex) => {
+      return currentValue > series[maxIndex] ? currentIndex : maxIndex;
+    }, 0);
+  
+    // Calculate percentage for the largest value
+    const maxPercentage = ((series[maxIndex] / total) * 100).toFixed(0);
+  
+    // Return the Text component with the percentage of the largest value
+    return (
+      <Text key={maxIndex}>
+        {maxPercentage}%
       </Text>
-    ));
+    );
   };
-
   return (
     <View>
 
@@ -60,12 +67,20 @@ const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
   const total = series.reduce((acc, value) => acc + value, 0);
 
   const renderPercentageLabels = () => {
-    const percentages = series.map((value) => ((value / total) * 100).toFixed(2));
-    return series.map((value, index) => (
-      <Text key={index}>
-        {percentages[index]}%
+    // Find the index of the maximum value in the series
+    const maxIndex = series.reduce((maxIndex, currentValue, currentIndex) => {
+      return currentValue > series[maxIndex] ? currentIndex : maxIndex;
+    }, 0);
+
+    // Calculate percentage for the maximum value
+    const maxPercentage = ((series[maxIndex] / total) * 100).toFixed(0);
+
+    // Return the Text component with the percentage of the maximum value
+    return (
+      <Text key={maxIndex}>
+        {maxPercentage}%
       </Text>
-    ));
+    );
   };
 
   return (
@@ -228,7 +243,7 @@ const TaskCalendar = ({ navigation}) => {
     }
   };
   return (
-    <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
+    // <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
@@ -366,7 +381,7 @@ const TaskCalendar = ({ navigation}) => {
        </LinearGradient>
      </Modal>
      </View>
-     </ImageBackground>
+    //  </ImageBackground>
   );
 };
 
