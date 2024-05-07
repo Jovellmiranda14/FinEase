@@ -46,7 +46,6 @@ const TestChart = ({ widthAndHeight, series, sliceColor, title, description, onD
         placeholder="Enter title"
         value={chartTitle}
       />
-      <Text>{chartDescription}</Text>
       <TextInput
         onChangeText={text => setChartDescription(text)}
         placeholder="Enter description"
@@ -99,7 +98,8 @@ const TaskCalendar = ({ navigation}) => {
 
   const [charts, setCharts] = useState([
     { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], title: 'Chart 1', description: 'Description for Chart 1' }
-  ]);
+  ]); // Two colors of Chart
+    
   const generateRandomSeries = () => {
     // Generate random numbers for the series
     const randomSeries = Array.from({ length: 2 }, () => Math.floor(Math.random() * 100));
@@ -108,7 +108,9 @@ const TaskCalendar = ({ navigation}) => {
   const handleUpdateChart = () => {
  
     const newSeries = generateRandomSeries();
+    //////////////////////////////////////////////////////////
     const newSliceColor = ['#000000', '#FFFFFF']; // Two colors of Chart
+    ////////////////////////////////////////////////////////////////////////
     setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, title: 'New Chart', description: 'New Description' }]);
   };
 
@@ -242,7 +244,7 @@ const TaskCalendar = ({ navigation}) => {
           </TouchableOpacity>
         </View>
   
-        <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <ScrollView>
           {/* Render SummaryChart */}
           <SummaryChart
             widthAndHeight={200} // Size of the Circle
@@ -268,7 +270,6 @@ const TaskCalendar = ({ navigation}) => {
             <Picker
               selectedValue={selectedDay}
               onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
-              
             >
               {Array.from({ length: 31 }, (_, index) => (
                 <Picker.Item key={index} label={(index + 1).toString()} value={index + 1} />

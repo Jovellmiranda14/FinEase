@@ -76,7 +76,7 @@ const Userprofile = ({ navigation }) => {
       // Send password reset email to the user's email address
       await sendPasswordResetEmail(auth, user.email);
   
-      setSuccessMessage('Password reset email sent. Please check your inbox.');
+      // setSuccessMessage('Password reset email sent. Please check your inbox.');
   
       // Set a timeout to clear the success message after a certain period (e.g., 1 minute)
       setTimeout(() => {
@@ -86,7 +86,7 @@ const Userprofile = ({ navigation }) => {
       // Clear any existing error message
       setErrorMessage('');
     } catch (error) {
-      console.error('Error sending password reset email:', error.message);
+      // console.error('Error sending password reset email:', error.message);
       if (error.code === 'auth/too-many-requests') {
         setErrorMessage('Too many requests. Please wait for one minute before trying again.');
   
