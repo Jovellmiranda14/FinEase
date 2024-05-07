@@ -245,6 +245,7 @@
             )}
             </TouchableOpacity>
           </View>
+        <Text style={styles.title}>Date: {formatDate(date)}</Text>
         <Text style={styles.title}>Total Amount Spent:</Text>
         <Text>${totalSpent.toFixed(2)}</Text>
         <Text style={styles.title}>Total Amount Saved:</Text> 
@@ -266,7 +267,7 @@
           value={source}
           onChangeText={handleSourceChange}
         />
-        <Text style={styles.title}>Date: {formatDate(date)}</Text>
+        
         <View style={styles.categoryContainer}>
           <Text style={styles.title}>Transaction Type:</Text>
           <Button

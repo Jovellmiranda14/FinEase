@@ -15,11 +15,11 @@ const GoalSettingScreen = () => {
     setGoals(updatedGoals);
   };
 
-  const calculateProgress = () => {
-    const totalGoals = goals.length;
-    const completedGoals = goals.filter((goal) => goal.completed).length;
-    return totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
-  };
+  // const calculateProgress = () => {
+  //   const totalGoals = goals.length;
+  //   const completedGoals = goals.filter((goal) => goal.completed).length;
+  //   return totalGoals > 0 ? (completedGoals / totalGoals) * 100 : 0;
+  // };
 
   const handleAddGoal = () => {
     if (newTitle.trim() !== '' && newDescription.trim() !== '') {
@@ -31,12 +31,12 @@ const GoalSettingScreen = () => {
     }
   };
 
-  const handleChangeHeaderText = () => {
-    if (newHeaderText.trim() !== '') {
-      setHeaderText(newHeaderText);
-      setNewHeaderText('');
-    }
-  };
+  // const handleChangeHeaderText = () => {
+  //   if (newHeaderText.trim() !== '') {
+  //     setHeaderText(newHeaderText);
+  //     setNewHeaderText('');
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
