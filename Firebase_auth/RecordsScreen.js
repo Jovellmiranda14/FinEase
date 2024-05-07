@@ -245,12 +245,13 @@
             )}
             </TouchableOpacity>
           </View>
-        <Text style={styles.title}>Date: {formatDate(date)}</Text>
+    
         <Text style={styles.title}>Total Amount Spent:</Text>
         <Text>${totalSpent.toFixed(2)}</Text>
         <Text style={styles.title}>Total Amount Saved:</Text> 
         <Text>${totalSaved.toFixed(2)}</Text>
 
+        <Text style={styles.title}>Date: {formatDate(date)}</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter Amount"
