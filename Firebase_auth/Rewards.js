@@ -195,8 +195,7 @@ const Rewards = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 20,
   },
   header: {
     flexDirection: 'row',
@@ -251,7 +250,6 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 300,
-    backgroundColor: '#fff',
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
