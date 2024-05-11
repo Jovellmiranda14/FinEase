@@ -86,6 +86,7 @@ const RecordsScreen = ({ navigation }) => {
       // Get a reference to the database
       const database = getDatabase();
 
+
       const userRecordsRef = ref(database, `users/${user.uid}/records`);
 
       // Push the new record to the database under the user's records path
@@ -97,11 +98,19 @@ const RecordsScreen = ({ navigation }) => {
       // Update total money based on category
       if (category === 'Income') {
         setTotalMoney(totalMoney + moneyValue);
-        setTotalSaved(totalSaved + moneyValue);
-      } else {
+        setTotalSpent(totalSpent - moneyValue);
+      } else if (category === 'Spent') {
         setTotalMoney(totalMoney - moneyValue);
         setTotalSpent(totalSpent + moneyValue);
       }
+      // if (category === 'Income') {
+      //   setTotalMoney(totalMoney + moneyValue);
+      //   setTotalSaved(totalSaved + moneyValue);
+      // } else if (category === 'Spent') {
+      //   setTotalMoney(totalMoney - moneyValue);
+      //   setTotalSpent(totalSpent + moneyValue);
+      // }
+      
 
       // Update date to current date
       const currentDate = new Date();
@@ -112,24 +121,22 @@ const RecordsScreen = ({ navigation }) => {
       setSource('');
 
       // Log success message
-      console.log('Record saved successfully to database.');
     } catch (error) {
-      console.error('Error saving record to database:', error);
     }
   };  
   
-  const handleDelete = (id, money, category) => {
-    const updatedRecords = records.filter(record => record.id !== id);
-    setRecords(updatedRecords);
+  // const handleDelete = (id, money, category) => {
+  //   const updatedRecords = records.filter(record => record.id !== id);
+  //   setRecords(updatedRecords);
 
-    if (category === 'Income') {
-      setTotalMoney(totalMoney - money);
-      setTotalSaved(totalSaved - money);
-    } else {
-      setTotalMoney(totalMoney + money);
-      setTotalSpent(totalSpent - money);
-    }
-  };
+  //   if (category === 'Income') {
+  //     setTotalMoney(totalMoney - money);
+  //     setTotalSaved(totalSaved - money);
+  //   } else {
+  //     setTotalMoney(totalMoney + money);
+  //     setTotalSpent(totalSpent - money);
+  //   }
+  // };
 
   useEffect(() => {
     // Calculate initial total money based on records
@@ -254,7 +261,7 @@ const RecordsScreen = ({ navigation }) => {
           </View>
           <View style={styles.card2}>
           <Text style={styles.title}>Total Amount Saved:</Text> 
-          <Text>${totalSaved.toFixed(2)}</Text>
+          <Text>${totalMoney.toFixed(2)}</Text>
         </View>
         <Text style={styles.title}>Date: {formatDate(date)}</Text>
         <TextInput
@@ -305,9 +312,9 @@ const RecordsScreen = ({ navigation }) => {
             <View key={record.id} style={styles.recordItem}>
               <Text style={styles.Transaction}>{record.category} Transaction</Text>
               <Text style={styles.Date}>Date: {formatDate(record.date)}</Text>
-              <Text style={styles.Amount}>Amount:₱{record.money.toFixed(2)}</Text>
+              <Text style={styles.Amount}>Amount: ₱{record.money.toFixed(2)}</Text>
               <Text style={styles.Source}>Source: {record.source}</Text>
-              <Text style={styles.Date}>Date: {formatDate(record.date)}</Text>
+              {/* <Text style={styles.Date}>Date: {formatDate(record.date)}</Text> */}
               <TouchableOpacity onPress={() => handleDelete(record.id, record.money, record.category)}>
                 {/* <Text style={styles.deleteButton}>Delete</Text> */}
               </TouchableOpacity>

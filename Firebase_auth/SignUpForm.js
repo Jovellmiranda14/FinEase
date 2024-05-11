@@ -26,7 +26,7 @@ const SignUpForm = ({ onBackToLogin }) => {
 
   const handleSignUp = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password, phoneNumber,dob);
       const user = userCredential.user;
 
       // Update user's profile with first name and last name
@@ -74,7 +74,7 @@ const SignUpForm = ({ onBackToLogin }) => {
           />
           <TextInput
             style={styles.phoneNumberInput}
-            placeholder="Phone Number (Optional)"
+            placeholder="Phone Number"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType='numeric'

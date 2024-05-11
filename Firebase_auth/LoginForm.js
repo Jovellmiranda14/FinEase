@@ -27,9 +27,7 @@ const LoginForm = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      console.log('User signed in successfully:', user.email);
     } catch (error) {
-      console.error('Login error:', error);
       setErrorMessage('Invalid email or password.');
       setLoginAttempts(loginAttempts + 1);
       setPassword(''); // Reset password field
