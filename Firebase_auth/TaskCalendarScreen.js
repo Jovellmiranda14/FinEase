@@ -196,7 +196,9 @@ const [selectedMonth, setSelectedMonth] = useState(month);
               </View>
               {/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
               {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
-          <View> 
+          
+            </View>
+            <View> 
       <Text>Month:</Text>
             <Picker
                selectedValue={selectedMonth}
@@ -225,8 +227,6 @@ const [selectedMonth, setSelectedMonth] = useState(month);
               ))}
             </Picker>
             </View>
-            </View>
-
 {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
             <TextInput
               onChangeText={setNewChartTitle}
