@@ -7,53 +7,57 @@ import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 import { LinearGradient } from 'expo-linear-gradient';
 
+             {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
+const getCurrentDate = () => {
+  const currentDate = new Date();
+  const month = currentDate.toLocaleString('default', { month: 'long' });
+  const day = currentDate.getDate().toString();
+  const year = currentDate.getFullYear().toString();
+  return { month, day, year };
+};
 
+{/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
+const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
+  const total = series.reduce((acc, value) => acc + value, 0);
 
+  const renderPercentageLabels = () => {
+    // Find the index of the maximum value in the series
+    const maxIndex = series.reduce((maxIndex, currentValue, currentIndex) => {
+      return currentValue > series[maxIndex] ? currentIndex : maxIndex;
+    }, 0);
 
-// const getCurrentDate = () => {
-//   const currentDate = new Date();
-//   const month = currentDate.toLocaleString('default', { month: 'long' });
-//   const day = currentDate.getDate().toString();
-//   const year = currentDate.getFullYear().toString();
-//   return { month, day, year };
-// };
+    // Calculate percentage for the maximum value
+    const maxPercentage = ((series[maxIndex] / total) * 100).toFixed(0);
 
-// const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
-//   const total = series.reduce((acc, value) => acc + value, 0);
+    // Return the Text component with the percentage of the maximum value
+    return (
+      <Text key={maxIndex}>
+        {maxPercentage}% 
+      </Text>
+    );
+  };
 
-//   const renderPercentageLabels = () => {
-//     // Find the index of the maximum value in the series
-//     const maxIndex = series.reduce((maxIndex, currentValue, currentIndex) => {
-//       return currentValue > series[maxIndex] ? currentIndex : maxIndex;
-//     }, 0);
+  return (
+    <View>
+      <PieChart
+        widthAndHeight={widthAndHeight}
+        series={series}
+        sliceColor={sliceColor}
+        coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
+        coverFill={'#FFF'}
+      />
+      <View>{renderPercentageLabels()}</View>
+    </View>
+  );
+};
+{/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
 
-//     // Calculate percentage for the maximum value
-//     const maxPercentage = ((series[maxIndex] / total) * 100).toFixed(0);
-
-//     // Return the Text component with the percentage of the maximum value
-//     return (
-//       <Text key={maxIndex}>
-//         {maxPercentage}%
-//       </Text>
-//     );
-//   };
-
-//   return (
-//     <View>
-//       <Text>Summary</Text>
-//       <PieChart
-//         widthAndHeight={widthAndHeight}
-//         series={series}
-//         sliceColor={sliceColor}
-//         coverRadius={0.7} // Adjust the coverRadius to make the donut smaller
-//         coverFill={'#FFF'}
-//       />
-//       <View>{renderPercentageLabels()}</View>
-//     </View>
-//   );
-// };
 
 const TaskCalendar = ({ navigation }) => {
+const [selectedMonth, setSelectedMonth] = useState(month);
+ const [selectedDay, setSelectedDay] = useState(day);
+ const [selectedYear, setSelectedYear] = useState(year);
+  const { month, day, year } = getCurrentDate();
   const [profilePicture, setProfilePicture] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newChartTitle, setNewChartTitle] = useState('');
@@ -90,14 +94,18 @@ const TaskCalendar = ({ navigation }) => {
     const newSliceColor = ['#000000', '#FFFFFF'];
     setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, newChartTitle: newChartTitle, newChartDescription: newChartDescription }]);
   };
+  const totalSeries = charts.reduce((acc, chart) => {
+    return chart.series.map((value, index) => (acc[index] || 0) + value);
+  }, []);
 
-  const handleDeleteChart = (index) => {
-    if (charts.length > 1) {
-      const updatedCharts = [...charts];
-      updatedCharts.splice(index, 1);
-      setCharts(updatedCharts);
-    }
-  };
+  
+  // const handleDeleteChart = (index) => {
+  //   if (charts.length > 1) {
+  //     const updatedCharts = [...charts];
+  //     updatedCharts.splice(index, 1);
+  //     setCharts(updatedCharts);
+  //   }
+  // };
 
   const fetchUserProfile = async (uid) => {
     try {
@@ -152,7 +160,7 @@ const TaskCalendar = ({ navigation }) => {
 
     return () => unsubscribe();
   }, []);
-
+  
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -177,17 +185,49 @@ const TaskCalendar = ({ navigation }) => {
                 <View style={styles.overallProgressTextContainer}>
                   <Text style={styles.overallProgressText}>Overall Progress</Text>
                 </View>
-                <PieChart
+                {/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
+                <SummaryChart
                   widthAndHeight={150}
-                  series={[70, 30]}  // Example data for overall progress
+                  series={charts[0].series} // Example data for overall progress
                   sliceColor={['#4CAF50', '#FF5722']}  // Example colors
                   coverRadius={0.7}
                   coverFill={'#FFF'}
-                />
+                /> 
               </View>
+              {/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
+              {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
+          <View> 
+      <Text>Month:</Text>
+            <Picker
+               selectedValue={selectedMonth}
+               onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}> 
+              {Array.from({ length: 12 }, (_, index) => (
+                <Picker.Item key={index} label={new Date(2024, index).toLocaleString('en-US', { month: 'long' })} value={index + 1} />
+              ))}
+           </Picker> 
+  
+          <Text>Day:</Text>
+             <Picker
+               selectedValue={selectedDay}
+               onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}>
+               {Array.from({ length: 31 }, (_, index) => (
+                 <Picker.Item key={index} label={(index + 1).toString()} value={index + 1} />
+               ))}
+             </Picker> 
+  
+             {/* Year Picker */}
+           <Text>Year:</Text>
+             <Picker
+               selectedValue={selectedYear}
+              onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}> 
+                {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
+               <Picker.Item key={year} label={year.toString()} value={year.toString()} />
+              ))}
+            </Picker>
+            </View>
             </View>
 
-
+{/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
             <TextInput
               onChangeText={setNewChartTitle}
               placeholder="Title"
@@ -200,9 +240,9 @@ const TaskCalendar = ({ navigation }) => {
               value={newChartDescription}
               style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF' }]} // Update the borderRadius and backgroundColor here
             />
-<TouchableOpacity onPress={handleUpdateChart} style={[styles.buttonContainer, { maxWidth: 200, alignSelf: 'center' }]}>
-  <Text style={styles.buttonText}>Add Chart</Text>
-</TouchableOpacity>
+              <TouchableOpacity onPress={handleUpdateChart} style={[styles.buttonContainer, { maxWidth: 200, alignSelf: 'center' }]}>
+                <Text style={styles.buttonText}>Add Chart</Text>
+              </TouchableOpacity>
 
             {charts.map((chart, index) => (
               <View key={index} style={styles.chartContainer}>
@@ -215,7 +255,7 @@ const TaskCalendar = ({ navigation }) => {
                   coverRadius={0.7}
                   coverFill={'#FFF'}
                 />
-                <Button title="Delete Chart" onPress={() => handleDeleteChart(index)} />
+                {/* <Button title="Delete Chart" onPress={() => handleDeleteChart(index)} /> */}
               </View>
             ))}
           </View>
@@ -282,6 +322,7 @@ const TaskCalendar = ({ navigation }) => {
         </Modal>
       </View>
     </ImageBackground>
+    
   );
 };
 
