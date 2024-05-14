@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 
+
 // const getCurrentDate = () => {
 //   const currentDate = new Date();
 //   const month = currentDate.toLocaleString('default', { month: 'long' });
@@ -51,7 +52,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 //     </View>
 //   );
 // };
-const TaskCalendar = ({ navigation, title }) => {
+
+const TaskCalendar = ({ navigation }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newChartTitle, setNewChartTitle] = useState('');
@@ -61,23 +63,24 @@ const TaskCalendar = ({ navigation, title }) => {
   const [lastName, setLastName] = useState(null);
   const [user, setUser] = useState(null);
   const [charts, setCharts] = useState([
-    { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'] }
+    { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], newChartTitle: 'Initial Chart', newChartDescription: 'This is the initial chart' }
   ]);
+
   const handleAuthentication = async () => {
-        try {
-          const auth = getAuth();
-          const user = auth.currentUser;
-          if (!user) {
-            throw new Error('User not logged in.');
-          }
-    
-          console.log('User logged out successfully!');
-          await signOut(auth);
-          setUser(null);
-        } catch (error) {
-          console.error('Logout error:', error);
-        }
-      };
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('User not logged in.');
+      }
+      console.log('User logged out successfully!');
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   const generateRandomSeries = () => {
     return Array.from({ length: 2 }, () => Math.floor(Math.random() * 100));
   };
@@ -151,126 +154,145 @@ const TaskCalendar = ({ navigation, title }) => {
   }, []);
 
   return (
-       <View style={styles.container}>
-         <View style={styles.header}>
-           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
-             <Text style={styles.sidebarButtonText}>≡</Text>
-           </TouchableOpacity>
-           <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
-           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-             {profilePicture ? (
-               <Image source={{ uri: profilePicture }} style={styles.userIcon} />
-             ) : (
-               <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
-             )}
-           </TouchableOpacity>
-         </View>
-
-      <ScrollView>
-        <View>
-          <TextInput
-
-            onChangeText={setNewChartTitle}
-            placeholder="Enter title for new chart"
-            value={newChartTitle}
-          />
-          <TextInput
-
-            onChangeText={setNewChartDescription}
-            placeholder="Enter description for new chart"
-            value={newChartDescription}
-          />
-          <Button title="Add Chart" onPress={handleUpdateChart} />
-
-          {charts.map((chart, index) => (
-            <View key={index}>
-              <Text>Title: {chart.newChartTitle}</Text>
-              <Text>Description: {chart.newChartDescription}</Text>
-              <PieChart
-                widthAndHeight={150}
-                series={chart.series}
-                sliceColor={chart.sliceColor}
-                coverRadius={0.7}
-                coverFill={'#FFF'}
-              />
-            </View>
-          ))}
+    <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
+            <Text style={styles.sidebarButtonText}>≡</Text>
+          </TouchableOpacity>
+          <Image source={require('./assets/logo-modified.png')} style={styles.logo} />
+          <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            {profilePicture ? (
+              <Image source={{ uri: profilePicture }} style={styles.userIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.userIcon} />
+            )}
+          </TouchableOpacity>
         </View>
-      </ScrollView>
 
-      <Modal
-        animationType="none"
-        transparent={true}
-        visible={isSidebarOpen}
-        onRequestClose={toggleSidebar}
-      >
-        <LinearGradient
-          colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
-          style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+        <ScrollView>
+          <View>
+            <View style={styles.chartContainer}>
+              <View style={styles.overallProgressContainer}>
+                <View style={styles.overallProgressTextContainer}>
+                  <Text style={styles.overallProgressText}>Overall Progress</Text>
+                </View>
+                <PieChart
+                  widthAndHeight={150}
+                  series={[70, 30]}  // Example data for overall progress
+                  sliceColor={['#4CAF50', '#FF5722']}  // Example colors
+                  coverRadius={0.7}
+                  coverFill={'#FFF'}
+                />
+              </View>
+            </View>
+
+
+            <TextInput
+              onChangeText={setNewChartTitle}
+              placeholder="Title"
+              value={newChartTitle}
+              style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF' }]} // Update the borderRadius and backgroundColor here
+            />
+            <TextInput
+              onChangeText={setNewChartDescription}
+              placeholder="Description"
+              value={newChartDescription}
+              style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF' }]} // Update the borderRadius and backgroundColor here
+            />
+<TouchableOpacity onPress={handleUpdateChart} style={[styles.buttonContainer, { maxWidth: 200, alignSelf: 'center' }]}>
+  <Text style={styles.buttonText}>Add Chart</Text>
+</TouchableOpacity>
+
+            {charts.map((chart, index) => (
+              <View key={index} style={styles.chartContainer}>
+                <Text style={styles.chartTitle}>Title: {chart.newChartTitle}</Text>
+                <Text style={styles.chartDescription}>Description: {chart.newChartDescription}</Text>
+                <PieChart
+                  widthAndHeight={150}
+                  series={chart.series}
+                  sliceColor={chart.sliceColor}
+                  coverRadius={0.7}
+                  coverFill={'#FFF'}
+                />
+                <Button title="Delete Chart" onPress={() => handleDeleteChart(index)} />
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        <Modal
+          animationType="none"
+          transparent={true}
+          visible={isSidebarOpen}
+          onRequestClose={toggleSidebar}
         >
-          <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
-            <Image source={require('./assets/left_arrow.png')} />
-          </TouchableOpacity>
-          {profilePicture ? (
-            <Image source={{ uri: profilePicture }} style={styles.sidebarIcon} />
-          ) : (
-            <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
-          )}
-          <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Home</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Records</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>TaskCalendar</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Online Banking')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Online Banking</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Rewards</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Goal Setting</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
-            <View style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Investment</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
-            <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
-        </LinearGradient>
-      </Modal>
-    </View>
+          <LinearGradient
+            colors={['rgba(16,42,96,0.97)', 'rgba(49,32,109,0.97)']}
+            style={[styles.sidebar, { left: isSidebarOpen ? 0 : -300 }]}
+          >
+            <TouchableOpacity onPress={toggleSidebar} style={styles.closeButton}>
+              <Image source={require('./assets/left_arrow.png')} />
+            </TouchableOpacity>
+            {profilePicture ? (
+              <Image source={{ uri:profilePicture }} style={styles.sidebarIcon} />
+            ) : (
+              <Image source={require('./assets/user-icon.png')} style={styles.sidebarIcon} />
+            )}
+            <Text style={styles.sidebarName}>{firstName} {lastName}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Home</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Records')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Records</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('TaskCalendar')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>TaskCalendar</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Online Banking')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Online Banking</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Rewards</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Goal Setting</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Investment')} style={[styles.sidebarItem, { marginBottom: 20 }]}>
+              <View style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Investment</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleAuthentication} style={[styles.buttonContainer, { position: 'absolute', bottom: 20 }]}>
+              <Text style={styles.buttonText}>Logout</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+        </Modal>
+      </View>
+    </ImageBackground>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
+    backgroundColor: 'transparent', // Set background color to transparent to allow the background image to show through
   },
   header: {
+    paddingTop: 40,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -332,21 +354,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     zIndex: 1,
   },
-  buttonContainer: {
-    width: '100%',
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 10,
-    marginBottom: 5,
-    backgroundColor: 'transparent',
-  },
-  buttonText: {
-    color: 'white',
-    textAlign: 'center',
-  },
   sidebarIcon: {
     width: 85,
     height: 85,
@@ -354,7 +361,72 @@ const styles = StyleSheet.create({
     marginRight: 4,
     top: -45,
   },
+  overallProgressContainer: {
+    alignItems: 'center',
+  },
+  overallProgressTextContainer: {
+    backgroundColor: '#2C59B4',
+    padding: 10,
+    borderRadius: 10,
+    position: 'absolute',
+    top: -40,
+    zIndex: 1,
+  },
+  overallProgressText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  chartContainer: {
+    backgroundColor: '#FFF',
+    padding: 20,
+    borderRadius: 15,
+    marginVertical: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    marginTop: 20,
+  },
+  chartTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  chartDescription: {
+    marginBottom: 10,
+  },
+  input: {
+    marginVertical: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#CCC',
+    borderRadius: 15, // Make the text box rectangular but circular on the edges
+  },
+  buttonContainer: {
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 20, // Soft circular edge
+    marginBottom: 10,
+    backgroundColor: '#4B2FAC', // Background color
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover', // or 'stretch' or 'contain'
+  },
 });
-
 
 export default TaskCalendar;
