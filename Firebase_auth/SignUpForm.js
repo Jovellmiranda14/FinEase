@@ -20,9 +20,7 @@ const SignUpForm = ({ onBackToLogin }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const auth = getAuth();
 
-  const togglePasswordVisibility = () => {
-    setHidePassword(!hidePassword);
-  };
+
 
   const handleSignUp = async () => {
     try {
@@ -45,7 +43,7 @@ const SignUpForm = ({ onBackToLogin }) => {
 
       console.log('User created successfully:', user.displayName);
     } catch (error) {
-      console.error('Sign up error:', error);
+      // console.error('Sign up error:', error);
       if (error.code === 'auth/invalid-email') {
         setErrorMessage('Invalid email address. Please enter a valid email.');
       } else {
@@ -53,7 +51,9 @@ const SignUpForm = ({ onBackToLogin }) => {
       }
     }
   };
-
+  const togglePasswordVisibility = () => {
+    setHidePassword(!hidePassword);
+  };
   return (
     <View style={styles.container}>
       <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
@@ -102,8 +102,8 @@ const SignUpForm = ({ onBackToLogin }) => {
              secureTextEntry={hidePassword}  // Use secureTextEntry to hide password
           />
           <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Image
-              source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+            <Image 
+              source={hidePassword ? require('./assets/hide_password.png')   :require('./assets/unhide_password.png')}
               style={styles.toggleIcon}// Use secureTextEntry to hide password
             /> 
           </TouchableOpacity>

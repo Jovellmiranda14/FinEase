@@ -63,7 +63,7 @@ const Userprofile = ({ navigation }) => {
 
       console.log('Image uploaded successfully:', downloadURL);
     } catch (error) {
-      console.error('Image upload error:', error);
+      // console.error('Image upload error:', error);
       setErrorMessage('Failed to upload profile picture. Please try again.');
     }
   };

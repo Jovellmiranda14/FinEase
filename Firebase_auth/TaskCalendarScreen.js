@@ -7,14 +7,10 @@ import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
 import { LinearGradient } from 'expo-linear-gradient';
 
-             {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
-             const getCurrentDate = () => {
-              const currentDate = new Date();
-              const month = currentDate.toLocaleString('default', { month: 'long' });
-              const day = currentDate.getDate().toString();
-              const year = currentDate.getFullYear().toString();
-              return { month, day, year };
-            };
+{/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
+const getDaysInMonth = (month, year) => {
+return new Date(year, month, 0).getDate();
+};
 
 {/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
 const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
@@ -56,10 +52,10 @@ const SummaryChart = ({ widthAndHeight, series, sliceColor }) => {
 
 
 const TaskCalendar = ({ navigation }) => {
-const [selectedMonth, setSelectedMonth] = useState(month);
- const [selectedDay, setSelectedDay] = useState(day);
- const [selectedYear, setSelectedYear] = useState(year);
-  const { month, day, year } = getCurrentDate();
+  const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Months are 0-based
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [days, setDays] = useState([]);
   const [profilePicture, setProfilePicture] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newChartTitle, setNewChartTitle] = useState('');
@@ -69,7 +65,7 @@ const [selectedMonth, setSelectedMonth] = useState(month);
   const [lastName, setLastName] = useState(null);
   const [user, setUser] = useState(null);
   const [charts, setCharts] = useState([
-    { series: [100, 200], sliceColor: ['#000000', '#FFFFFF'], newChartTitle: 'Initial Chart', newChartDescription: 'This is the initial chart' }
+    { series: [1, 100], sliceColor: ['#000000', '#FFFFFF'], newChartTitle: 'Initial Chart', newChartDescription: 'This is the initial chart' }
   ]);
 
   const handleAuthentication = async () => {
@@ -83,7 +79,7 @@ const [selectedMonth, setSelectedMonth] = useState(month);
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      // console.error('Logout error:', error);
     }
   };
 
@@ -107,7 +103,7 @@ const [selectedMonth, setSelectedMonth] = useState(month);
       const url = await getDownloadURL(profilePictureRef);
       setProfilePicture(url);
     } catch (error) {
-      console.error('Error fetching profile picture:', error);
+      // console.error('Error fetching profile picture:', error);
       setProfilePicture(null);
     }
   };
@@ -153,7 +149,19 @@ const [selectedMonth, setSelectedMonth] = useState(month);
 
     return () => unsubscribe();
   }, []);
-  
+  useEffect(() => {
+    const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
+    const daysArray = Array.from({ length: daysInMonth }, (_, index) => index + 1);
+    setDays(daysArray);
+    if (selectedDay > daysInMonth) {
+      setSelectedDay(daysInMonth);
+    }
+  }, [selectedMonth, selectedYear]);
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -180,12 +188,12 @@ const [selectedMonth, setSelectedMonth] = useState(month);
                 </View>
                 {/*------------------ ------------------ ----------Summary------------------ ------------------ ------------------ */}
                 <SummaryChart
-  widthAndHeight={150}
-  series={charts[0].series}
-  sliceColor={['#2C59B4', '#6C9AF5']}
-  coverRadius={0.7}
-  coverFill={'#FFF'}
-/> 
+                  widthAndHeight={150}
+                  series={totalSeries}
+                  sliceColor={['#2C59B4', '#6C9AF5']}
+                  coverRadius={0.7}
+                  coverFill={'#FFF'}
+                   /> 
 
               </View>
               {/*
@@ -194,53 +202,55 @@ const [selectedMonth, setSelectedMonth] = useState(month);
           
               </View>
             <View> 
-            <Text style={{ color: 'white', marginLeft: 20 }}>Month:</Text>
-<Picker
-  selectedValue={selectedMonth}
-  onValueChange={(itemValue, itemIndex) => setSelectedMonth(itemValue)}
-  style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
->
-  {Array.from({ length: 12 }, (_, index) => (
-    <Picker.Item key={index} label={new Date(2024, index).toLocaleString('en-US', { month: 'long' })} value={index + 1} color="#021C50" />
-  ))}
-</Picker> 
+            <Text style={{ color: 'white', marginLeft: 20 }}>Month: </Text>
+            <Picker
+          selectedValue={selectedMonth}
+          onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+          style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
+        >
+          {monthNames.map((month, index) => (
+            <Picker.Item key={index} label={month} value={index + 1} color="#021C50" />
+          ))}
+        </Picker>
 
-<Text style={{ color: 'white', marginLeft: 20 }}>Day:</Text>
-<Picker
-  selectedValue={selectedDay}
-  onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
-  style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
->
-  {Array.from({ length: 31 }, (_, index) => (
-    <Picker.Item key={index} label={(index + 1).toString()} value={index + 1} color="#021C50" />
-  ))}
-</Picker> 
 
-<Text style={{ color: 'white', marginLeft: 20 }}>Year:</Text>
-<Picker
-  selectedValue={selectedYear}
-  onValueChange={(itemValue, itemIndex) => setSelectedYear(itemValue)}
-  style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
->
-  {Array.from({ length: 10 }, (_, index) => 2024 - index).map((year) => (
-    <Picker.Item key={year} label={year.toString()} value={year.toString()} color="#021C50" />
-  ))}
-</Picker>
+
+      <Text style={{ color: 'white', marginLeft: 20 }}>Day:</Text>
+      <Picker
+        selectedValue={selectedDay}
+        onValueChange={(itemValue) => setSelectedDay(itemValue)}
+        style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
+      >
+        {days.map((day) => (
+          <Picker.Item key={day} label={day.toString()} value={day} color="#021C50" />
+        ))}
+      </Picker>
+
+        <Text style={{ color: 'white', marginLeft: 20 }}>Year:</Text>
+        <Picker
+        selectedValue={selectedYear}
+        onValueChange={(itemValue) => setSelectedYear(itemValue)}
+        style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
+      >
+        {Array.from({ length: 50 }, (_, index) => (
+          <Picker.Item key={index} label={(2024 + index).toString()} value={2024 + index} color="#021C50" />
+        ))}
+      </Picker>
             </View>
 {/*------------------ ------------------ ----------Date Picker------------------ ------------------ ------------------ */}
-<TextInput
-  onChangeText={setNewChartTitle}
-  placeholder="Title"
-  value={newChartTitle}
-  style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF', marginTop: 40 }]}
-/>
+            <TextInput
+              onChangeText={setNewChartTitle}
+              placeholder="Title"
+              value={newChartTitle}
+              style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF', marginTop: 40 }]}
+            />
 
-<TextInput
-  onChangeText={setNewChartDescription}
-  placeholder="Description"
-  value={newChartDescription}
-  style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF', marginTop: 10 }]} 
-/>
+            <TextInput
+              onChangeText={setNewChartDescription}
+              placeholder="Description"
+              value={newChartDescription}
+              style={[styles.input, { borderRadius: 15, backgroundColor: '#FFF', marginTop: 10 }]} 
+            />
               <TouchableOpacity onPress={handleUpdateChart} style={[styles.buttonContainer, { maxWidth: 200, alignSelf: 'center' }]}>
                 <Text style={styles.buttonText}>Add Chart</Text>
               </TouchableOpacity>

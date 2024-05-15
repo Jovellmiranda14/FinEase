@@ -32,7 +32,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
         setResetMessage('');
       }, 60000); // 1 minute in milliseconds
     } catch (error) {
-      console.error('Error sending password reset email:', error.message);
+      // console.error('Error sending password reset email:', error.message);
       setResetMessage('Failed to send password reset email. Please try again later.');
     }
   };

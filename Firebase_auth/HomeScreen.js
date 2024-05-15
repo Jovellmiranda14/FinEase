@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground} from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp'; 
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const HomeScreen = () => {
@@ -45,8 +46,8 @@ const HomeScreen = () => {
           const userData = snapshot.val();
           if (userData) {
             const { firstName, lastName } = userData;
-            setFirstName(firstName || '');
-            setLastName(lastName || '');
+            setFirstName(firstName);
+            setLastName(lastName);
             // Assuming fetchUserProfile fetches the profile picture based on user ID
             fetchUserProfile(user.uid, setProfilePicture);
           }
@@ -84,7 +85,7 @@ const HomeScreen = () => {
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      // console.error('Logout error:', error);
     }
   };
 
@@ -105,7 +106,7 @@ const HomeScreen = () => {
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       {/*-------------------------------- ----Header-------------------------------- */}
-      <View style={styles.container}> 
+      <ScrollView style={styles.container}> 
         <View style={styles.header}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
@@ -213,7 +214,7 @@ const HomeScreen = () => {
           </LinearGradient>
         </Modal>
         {/*-------------------------------- ----Navigation-------------------------------- */}
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
