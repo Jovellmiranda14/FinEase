@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground, Image } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground, Image, TouchableWithoutFeedback } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
@@ -101,12 +101,12 @@ const SignUpForm = ({ onBackToLogin }) => {
             onChangeText={setPassword}
              secureTextEntry={hidePassword}  // Use secureTextEntry to hide password
           />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
+          <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
             <Image 
               source={hidePassword ? require('./assets/hide_password.png')   :require('./assets/unhide_password.png')}
               style={styles.toggleIcon}// Use secureTextEntry to hide password
             /> 
-          </TouchableOpacity>
+          </TouchableWithoutFeedback >
           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
           <CustomButton title="Create an Account" onPress={handleSignUp} />
           <TouchableOpacity onPress={onBackToLogin}>

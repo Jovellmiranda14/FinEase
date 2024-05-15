@@ -107,7 +107,33 @@ const TaskCalendar = ({ navigation }) => {
       setProfilePicture(null);
     }
   };
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      if (user) {
+        const userRef = ref(database, `users/${user.uid}`);
+        onValue(userRef, (snapshot) => {
+          const userData = snapshot.val();
+          if (userData) {
+            const { firstName, lastName } = userData;
+            setFirstName(firstName);
+            setLastName(lastName);
+            // Assuming fetchUserProfile fetches the profile picture based on user ID
+            fetchUserProfile(user.uid, setProfilePicture);
+          }
+        });
+      } else {
+        // Clear profile picture URL when user is logged out
+        setProfilePicture(null);
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [database]);
+  const database = getDatabase();
 
+  
   const toggleSidebar = () => {
     if (isSidebarOpen) {
       Animated.timing(slideAnim, {

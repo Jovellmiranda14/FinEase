@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, Button, View, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import { Text, TextInput, Button, View, TouchableOpacity, StyleSheet,TouchableWithoutFeedback , ImageBackground, Image } from 'react-native';
 import ForgotPassword from './ForgotPassword';
 import SignUpForm from './SignUpForm';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
@@ -75,16 +75,16 @@ const LoginForm = () => {
             onChangeText={setPassword}
             secureTextEntry={hidePassword} 
           />
-           <TouchableOpacity onPress={togglePasswordVisibility}>
+           <TouchableWithoutFeedback  onPress={togglePasswordVisibility}>
         <Image
-          source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+         source={hidePassword ? hide_password : unhide_password}
           style={styles.toggleIcon}
         />
-      </TouchableOpacity>
+      </TouchableWithoutFeedback >
 
-          <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPassword}>
+          <TouchableWithoutFeedback  style={styles.forgotPassword} onPress={handleForgotPassword}>
             <Text style={styles.forgotPasswordText}>Forgot Password</Text>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback >
 
 
           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
@@ -178,10 +178,10 @@ const styles = StyleSheet.create({
     fontWeight: 'normal',
   },  
   toggleIcon: {
-    width: 30,
-    height: 30,
-    bottom: 43,
-    left: 90,
+    width: 32,
+    height: 32,
+    bottom: 44,
+    left: 93,
   },
 });
 
