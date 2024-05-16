@@ -250,17 +250,17 @@ try {
         </View>
         <View style={styles.card1}>
           <Text style={styles.title}>Total Amount Spent:</Text>
-          <Text>${totalSpent.toFixed(2)}</Text>
+          <Text style={styles.content}>${totalSpent.toFixed(2)}</Text>
           </View>
           <View style={styles.card2}>
           <Text style={styles.title}>Total Amount Saved:</Text> 
-          <Text>${totalSaved.toFixed(2)}</Text>
+          <Text style={styles.content}>${totalSaved.toFixed(2)}</Text>
         </View>
-        <Text style={styles.title}>Date: {formatDate(date)}</Text>
+        <Text style={styles.title3}>Date: {formatDate(date)}</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter Amount"
-          placeholderTextColor="white" 
+          placeholderTextColor="#4B2FAC" 
           keyboardType="numeric"
           value={money}
           onChangeText={handleMoneyChange}
@@ -269,36 +269,49 @@ try {
         <TextInput
           style={styles.input}
           placeholder="Enter Source"
-          placeholderTextColor="white" 
+          placeholderTextColor="#4B2FAC" 
           value={source}
           onChangeText={handleSourceChange}
         />
         
         <View style={styles.categoryContainer}>
-          <Text style={styles.title}>Transaction Type:</Text>
-          <Button
-            title={category === 'Income' ? 'Income' : 'Spent'}
-            onPress={() => setCategory(category === 'Income' ? 'Spent' : 'Income')}
-          />
+          <Text style={styles.title2}>Transaction Type: </Text>
+          <View style={styles.buttonContainer}>
+  <Button
+    title={category === 'Income' ? 'Income' : 'Spent'}
+    onPress={() => setCategory(category === 'Income' ? 'Spent' : 'Income')}
+    color="#4B2FAC"
+  />
+</View>
         </View>
-
-        <Button title="Submit" onPress={handleSubmit} />
-
-        <Text style={styles.title}>Transaction Details:</Text>
-        <View style={styles.categoryContainer}>
-          <Button
-            title="All"
-            onPress={() => filterRecords('All')}
-          />
-          <Button
-            title="Income"
-            onPress={() => filterRecords('Income')}
-          />
-          <Button
-            title="Spent"
-            onPress={() => filterRecords('Spent')}
-          />
+        <View style={styles.buttonContainer}>
+        <Button title="Submit" onPress={handleSubmit} color="#4B2FAC" />
         </View>
+        <Text style={styles.title2}>Transaction Details:</Text>
+        <View style={styles.navigationContainer}>
+  <View style={styles.navigationButtonContainer}>
+    <Button
+      title="All"
+      onPress={() => filterRecords('All')}
+      color="#4B2FAC"
+    />
+  </View>
+  <View style={styles.navigationButtonContainer}>
+    <Button
+      title="Income"
+      onPress={() => filterRecords('Income')}
+      color="#4B2FAC"
+    />
+  </View>
+  <View style={styles.navigationButtonContainer}>
+    <Button
+      title="Spent"
+      onPress={() => filterRecords('Spent')}
+      color="#4B2FAC"
+    />
+  </View>
+</View>
+
 
         <ScrollView  style={styles.recordsContainer}>
           {filteredRecords.slice(0).reverse().map(record => (
@@ -424,22 +437,37 @@ const styles = StyleSheet.create({
     padding: 1,
     marginBottom: 0,
   },
+  content: {
+    color: 'white', 
+    fontSize: 14,
+  },
   card2: {
     backgroundColor: '#371E8B',
     padding: 1,
     marginBottom: 20,
   },
   title: {
+    color: 'black',
     fontSize: 20,
-    fontWeight: 'bold',
     marginBottom: 5,
   },
+  title2: {
+    color: 'white',
+    fontSize: 20,
+    marginBottom: 5,
+  },
+  title3: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center', // Align text to the center
+    marginBottom: 10, // Adjust margin top as needed
+  },
   input: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 5,
+    backgroundColor: 'white',
+    borderRadius: 25,
     padding: 10,
     marginBottom: 10,
-    color: 'white',
+    color: 'black',
   },
   categoryContainer: {
     flexDirection: 'row',
@@ -530,7 +558,41 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     textAlign: 'center',
-  },  
+  }, 
+  
+  navigationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start', // Aligns items to the left
+    backgroundColor: '#F0F0F0', // Change to your desired background color
+    paddingVertical: 10,
+    borderRadius: 25, // Add border radius here
+    overflow: 'hidden',
+    marginBottom: 10,
+  },
+
+  navigationButtonContainer: {
+    borderRadius: 19,
+    overflow: 'hidden',
+    marginHorizontal: 5, // Add marginHorizontal to create equal space between buttons
+  },
+  
+
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginHorizontal: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+
+  buttonContainer: {
+    borderRadius: 15, // Apply border radius here
+    overflow: 'hidden', // This ensures the border radius is applied correctly
+  },
 });
 
 export default RecordsScreen;
