@@ -287,7 +287,7 @@ const RecordsScreen = ({ navigation }) => {
         
         <View style={styles.categoryContainer}>
           <Text style={styles.title2}>Transaction Type: </Text>
-          <View style={styles.buttonContainer}>
+          <View style={styles.buttonContainer2}>
   <Button
     title={category === 'Income' ? 'Income' : 'Spent'}
     onPress={() => setCategory(category === 'Income' ? 'Spent' : 'Income')}
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: '40%',
+    width: '100%',
     height: 38, // Adjust the height of the button container
     justifyContent: 'center',
     alignItems: 'center',
@@ -614,6 +614,18 @@ const styles = StyleSheet.create({
 
   buttonContainer1: {
     width: '100%',
+    height: 38, // Adjust the height of the button container
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderColor: 'white',
+    borderRadius: 20, // Soft circular edge
+    marginBottom: 10,
+    backgroundColor: '#4B2FAC', // Background color
+  },
+
+  buttonContainer2: {
+    width: '40%',
     height: 38, // Adjust the height of the button container
     justifyContent: 'center',
     alignItems: 'center',
