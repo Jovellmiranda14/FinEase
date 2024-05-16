@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground, Image } from 'react-native';
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ImageBackground, Image, TouchableWithoutFeedback } from 'react-native';
 import { getAuth, createUserWithEmailAndPassword, updateProfile } from '@firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database';
 
@@ -20,13 +20,11 @@ const SignUpForm = ({ onBackToLogin }) => {
   const [hidePassword, setHidePassword] = useState(true);
   const auth = getAuth();
 
-  const togglePasswordVisibility = () => {
-    setHidePassword(!hidePassword);
-  };
+
 
   const handleSignUp = async () => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password, phoneNumber,dob);
       const user = userCredential.user;
 
       // Update user's profile with first name and last name
@@ -45,7 +43,7 @@ const SignUpForm = ({ onBackToLogin }) => {
 
       console.log('User created successfully:', user.displayName);
     } catch (error) {
-      console.error('Sign up error:', error);
+      // console.error('Sign up error:', error);
       if (error.code === 'auth/invalid-email') {
         setErrorMessage('Invalid email address. Please enter a valid email.');
       } else {
@@ -53,7 +51,9 @@ const SignUpForm = ({ onBackToLogin }) => {
       }
     }
   };
-
+  const togglePasswordVisibility = () => {
+    setHidePassword(!hidePassword);
+  };
   return (
     <View style={styles.container}>
       <ImageBackground source={require('./assets/BI.png')} style={styles.backgroundImage}>
@@ -74,7 +74,7 @@ const SignUpForm = ({ onBackToLogin }) => {
           />
           <TextInput
             style={styles.phoneNumberInput}
-            placeholder="Phone Number (Optional)"
+            placeholder="Phone Number"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             keyboardType='numeric'
@@ -101,12 +101,12 @@ const SignUpForm = ({ onBackToLogin }) => {
             onChangeText={setPassword}
              secureTextEntry={hidePassword}  // Use secureTextEntry to hide password
           />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Image
-              source={hidePassword ? require('./assets/hide_password.png') : require('./assets/unhide_password.png')}
+          <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
+            <Image 
+              source={hidePassword ? require('./assets/hide_password.png')   :require('./assets/unhide_password.png')}
               style={styles.toggleIcon}// Use secureTextEntry to hide password
             /> 
-          </TouchableOpacity>
+          </TouchableWithoutFeedback >
           {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
           <CustomButton title="Create an Account" onPress={handleSignUp} />
           <TouchableOpacity onPress={onBackToLogin}>

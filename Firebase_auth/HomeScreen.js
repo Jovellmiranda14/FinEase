@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal, Animated, Image, Button, ImageBackground} from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { useNavigation } from '@react-navigation/native';
@@ -12,6 +12,7 @@ import OnlineBanking from './assets/online_banking.png';
 import Rewards from './assets/rewards.png';
 import GoalSetting from './assets/goal_setting.png';
 import investment from './assets/investment.webp'; 
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const HomeScreen = () => {
@@ -45,8 +46,8 @@ const HomeScreen = () => {
           const userData = snapshot.val();
           if (userData) {
             const { firstName, lastName } = userData;
-            setFirstName(firstName || '');
-            setLastName(lastName || '');
+            setFirstName(firstName);
+            setLastName(lastName);
             // Assuming fetchUserProfile fetches the profile picture based on user ID
             fetchUserProfile(user.uid, setProfilePicture);
           }
@@ -84,7 +85,7 @@ const HomeScreen = () => {
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
+      // console.error('Logout error:', error);
     }
   };
 
@@ -105,7 +106,7 @@ const HomeScreen = () => {
   return (
     <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
       {/*-------------------------------- ----Header-------------------------------- */}
-      <View style={styles.container}> 
+      <ScrollView style={styles.container}> 
         <View style={styles.header}>
           <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
             <Text style={styles.sidebarButtonText}>≡</Text>
@@ -139,15 +140,24 @@ const HomeScreen = () => {
         </TouchableOpacity>
 
         {filteredCards.length > 0 && filteredCards.map(card => (
-          <TouchableOpacity
-            key={card.id}
-            style={[styles.card, card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard]}
-            onPress={() => navigation.navigate(card.name)}
-          >
-            <Image source={card.image} style={styles.imageStyle} />
-            <Text style={styles.cardText}>{card.name}</Text>
-            <View style={styles.bottomBorderFill} />
-          </TouchableOpacity>
+ <TouchableOpacity
+ key={card.id}
+ style={[
+   styles.card,
+   card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard
+ ]}
+ onPress={() => {
+   if (card.name !== 'Rewards' && card.name !== 'Goal Setting') {
+     navigation.navigate(card.name);
+   } else {
+     // Handle the case where navigation should not occur
+   }
+ }}
+>
+ <Image source={card.image} style={styles.imageStyle} />
+ <Text style={styles.cardText}>{card.name}</Text>
+ <View style={styles.bottomBorderFill} />
+</TouchableOpacity>
         ))}
         </View>
 {/*-------------------------------- ----Navigation-------------------------------- */}
@@ -190,12 +200,12 @@ const HomeScreen = () => {
                 <Text style={styles.buttonText}>Online Banking</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Rewards</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Goal Setting</Text>
               </View>
@@ -213,7 +223,7 @@ const HomeScreen = () => {
           </LinearGradient>
         </Modal>
         {/*-------------------------------- ----Navigation-------------------------------- */}
-      </View>
+      </ScrollView>
     </ImageBackground>
   );
 };
@@ -302,6 +312,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'white',
     textShadowOffset: { width: 1, height: 1 },
     zIndex: 1,
+    fontWeight: 'bold'
   },
   cardTextTop: {
     bottom: 'auto',

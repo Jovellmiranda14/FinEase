@@ -85,10 +85,10 @@ const App = () => {
             <Stack.Screen name="Records" component={RecordsScreen}options={{ headerShown: false }} />
             <Stack.Screen name="TaskCalendar" component={TaskCalendarScreen}options={{ headerShown: false }} />
             <Stack.Screen name="Profile" component={Userprofile}options={{ headerShown: false }}/>
-            <Stack.Screen name="Goal Setting" component={GoalSetting}options={{ headerShown: false }} />
+            {/* <Stack.Screen name="Goal Setting" component={GoalSetting}options={{ headerShown: false }} /> */}
             <Stack.Screen name="Online Banking" component={Onlinebanking}options={{ headerShown: false }}/>
             <Stack.Screen name="Investment" component={Investment} options={{ headerShown: false }}/>
-            <Stack.Screen name="Rewards" component={Rewards}options={{ headerShown: false }}/>
+            {/* <Stack.Screen name="Rewards" component={Rewards}options={{ headerShown: false }}/> */}
           </>
         ) : (
           <Stack.Screen name="Auth" options={{ headerShown: false }}>

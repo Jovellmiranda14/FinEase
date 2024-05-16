@@ -95,8 +95,7 @@ const Investment = ({ navigation }) => {
         const user = auth.currentUser;
         if (!user) {
           throw new Error('User not logged in.');
-        }
-  
+        }           
         console.log('User logged out successfully!');
         await signOut(auth);
         setUser(null);
@@ -106,8 +105,8 @@ const Investment = ({ navigation }) => {
     };
    
   return (  
-   <View style={styles.container}>
-    <View style={styles.header}>
+              <View style={styles.container}>
+                <View style={styles.header}>
                 <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
                   <Text style={styles.sidebarButtonText}>≡</Text>
                 </TouchableOpacity>
@@ -163,12 +162,12 @@ const Investment = ({ navigation }) => {
              <Text style={styles.buttonText}>Online Banking</Text>
            </View>
          </TouchableOpacity>
-         <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+         <TouchableOpacity style={styles.sidebarItem}>
            <View style={styles.buttonContainer}>
              <Text style={styles.buttonText}>Rewards</Text>
            </View>
          </TouchableOpacity>
-         <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+         <TouchableOpacity style={styles.sidebarItem}>
            <View style={styles.buttonContainer}>
              <Text style={styles.buttonText}>Goal Setting</Text>
            </View>
