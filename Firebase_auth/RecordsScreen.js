@@ -81,7 +81,8 @@ const RecordsScreen = ({ navigation }) => {
       date: date.toISOString(), // Save date as ISO string for consistency
       category: category,
     };
-
+    setRecords([...records, newRecord]);
+    setRecordId(recordId + 1);
     try {
       // Get a reference to the database
       const database = getDatabase();
