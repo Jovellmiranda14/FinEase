@@ -7,11 +7,11 @@
 //     { status: 'completed', count: 5 },
 //     { status: 'ongoing', count: 3 },
 //     { status: 'failed', count: 2 },
-//   ];
+//   ];aa
 
 //   // Function to generate circles representing activities
 //   const renderActivities = () => {
-//     let circles = [];
+//     let circles = [];a
 
 //     // Loop through activities data and create circles
 //     activities.forEach((activity, index) => {
