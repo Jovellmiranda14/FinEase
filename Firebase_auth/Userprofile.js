@@ -245,11 +245,11 @@ const Userprofile = ({ navigation }) => {
   )}
 </TouchableOpacity>
         <Text style={styles.sectionTitle}>{firstName} {lastName}</Text>
-        <Text style={styles.sectionTitle}> Username</Text>
+        <Text style={styles.sectionTitle1}> Username</Text>
         <Text style={styles.detailText}>Age: {age}</Text>
-        <Text style={styles.detailText}>Phone: {phoneNumber}</Text>
-        <Text style={styles.detailText}>Email: {email}</Text>
-        <Text style={styles.detailText}>Date of Birth: {dob}</Text>
+        <Text style={styles.detailText1}>Phone: {phoneNumber}</Text>
+        <Text style={styles.detailText2}>Email: {email}</Text>
+        <Text style={styles.detailText3}>Date of Birth: {dob}</Text>
       </View>
       <Modal
             animationType="none"
@@ -339,10 +339,16 @@ const styles = StyleSheet.create({
     top: 10,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 21,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 1,
     color: 'white',
+  },
+  sectionTitle1: {
+    fontSize: 16,
+    fontWeight: 'normal',
+    marginBottom: 15,
+    color: 'gray',
   },
     input: {
     height: 40,
@@ -367,9 +373,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailText:{
-    color: 'white'
-  }
-  ,
+    width: '100%',
+    height: 30,  
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#4B2FAC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderRadius: 20,
+    marginBottom: 10,
+ },
+  detailText1:{
+    width: '100%',
+    height: 30,  
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#4B2FAC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderRadius: 20,
+    marginBottom: 10,
+
+  },
+  detailText2:{
+    width: '100%',
+    height: 30,  
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#4B2FAC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderRadius: 20,
+    marginBottom: 10,
+
+  },
+  detailText3:{
+    width: '100%',
+    height: 30, 
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#4B2FAC',
+    justifyContent: 'left',
+    alignItems: 'center',
+    textAlign: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderRadius: 20,
+    marginBottom: 10,
+
+  },
   buttonText: {
     color: 'white',
     fontSize: 16,
