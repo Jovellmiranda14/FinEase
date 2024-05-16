@@ -65,7 +65,7 @@ const TaskCalendar = ({ navigation }) => {
   const [lastName, setLastName] = useState(null);
   const [user, setUser] = useState(null);
   const [charts, setCharts] = useState([
-    { series: [1, 100], sliceColor: ['#000000', '#FFFFFF'], newChartTitle: 'Initial Chart', newChartDescription: 'This is the initial chart' }
+    { series: [0, 100], sliceColor: ['#000000', '#FFFFFF'], newChartTitle: 'Initial Chart', newChartDescription: 'This is the initial chart' }
   ]);
 
   const handleAuthentication = async () => {
@@ -337,12 +337,12 @@ const TaskCalendar = ({ navigation }) => {
                 <Text style={styles.buttonText}>Online Banking</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Rewards</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Goal Setting</Text>
               </View>

@@ -363,12 +363,12 @@ const RecordsScreen = ({ navigation }) => {
               <Text style={styles.buttonText}>Online Banking</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+          <TouchableOpacity style={styles.sidebarItem}>
             <View style={styles.buttonContainer}>
               <Text style={styles.buttonText}>Rewards</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+          <TouchableOpacity style={styles.sidebarItem}>
             <View style={styles.buttonContainer}>
               <Text style={styles.buttonText}>Goal Setting</Text>
             </View>

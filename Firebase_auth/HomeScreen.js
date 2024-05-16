@@ -140,15 +140,24 @@ const HomeScreen = () => {
         </TouchableOpacity>
 
         {filteredCards.length > 0 && filteredCards.map(card => (
-          <TouchableOpacity
-            key={card.id}
-            style={[styles.card, card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard]}
-            onPress={() => navigation.navigate(card.name)}
-          >
-            <Image source={card.image} style={styles.imageStyle} />
-            <Text  style={styles.cardText}>{card.name}</Text>
-            <View style={styles.bottomBorderFill} />
-          </TouchableOpacity>
+ <TouchableOpacity
+ key={card.id}
+ style={[
+   styles.card,
+   card.name === 'TaskCalendar' || card.name === 'Rewards' || card.name === 'Investment' ? styles.specialCard : styles.normalCard
+ ]}
+ onPress={() => {
+   if (card.name !== 'Rewards' && card.name !== 'Goal Setting') {
+     navigation.navigate(card.name);
+   } else {
+     // Handle the case where navigation should not occur
+   }
+ }}
+>
+ <Image source={card.image} style={styles.imageStyle} />
+ <Text style={styles.cardText}>{card.name}</Text>
+ <View style={styles.bottomBorderFill} />
+</TouchableOpacity>
         ))}
         </View>
 {/*-------------------------------- ----Navigation-------------------------------- */}
@@ -191,12 +200,12 @@ const HomeScreen = () => {
                 <Text style={styles.buttonText}>Online Banking</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Rewards')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Rewards</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Goal Setting')} style={styles.sidebarItem}>
+            <TouchableOpacity style={styles.sidebarItem}>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>Goal Setting</Text>
               </View>
