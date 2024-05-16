@@ -257,19 +257,19 @@ const RecordsScreen = ({ navigation }) => {
         </View>
         <View style={styles.card1}>
           <Text style={styles.title}>Total Amount Spent:</Text>
-<<<<<<< HEAD
+
           <Text style={styles.content}>${totalSpent.toFixed(2)}</Text>
           </View>
           <View style={styles.card2}>
           <Text style={styles.title}>Total Amount Saved:</Text> 
           <Text style={styles.content}>${totalSaved.toFixed(2)}</Text>
-=======
+
           <Text>₱{totalSpent.toFixed(2)}</Text>
           </View>
           <View style={styles.card2}>
           <Text style={styles.title}>Total Amount Saved:</Text> 
           <Text>₱{totalMoney.toFixed(2)}</Text>
->>>>>>> 67eef0d9b8525329083db67bc5cb402ed9091e52
+
         </View>
         <Text style={styles.title3}>Date: {formatDate(date)}</Text>
         <TextInput
