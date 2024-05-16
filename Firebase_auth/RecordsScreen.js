@@ -252,8 +252,11 @@ const RecordsScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
         </View>
-        <View style={styles.imageCard}>
-        <Image source={require('./assets/Records_Page_Banner.png')}style={styles.imageCard} />
+        <View style={[styles.imageCard, { width: '100%', height: 200 }]}>
+        <Image source={require('./assets/Records_Page_Banner.png')}
+              style={styles.image} 
+              resizeMode="cover"
+          />
         </View>
         <View style={styles.card1}>
           <Text style={styles.title}>Total Amount Spent:</Text>
@@ -292,7 +295,7 @@ const RecordsScreen = ({ navigation }) => {
   />
 </View>
         </View>
-        <View style={styles.buttonContainer}>
+        <View style={styles.buttonContainer1}>
         <Button title="Submit" onPress={handleSubmit} color="#4B2FAC" />
         </View>
         <Text style={styles.title2}>Transaction Details:</Text>
@@ -598,15 +601,39 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    width: '100%',
-    height: 40,
+    width: '40%',
+    height: 38, // Adjust the height of the button container
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2, // Thickness of the border
     borderColor: 'white',
     borderRadius: 20, // Soft circular edge
     marginBottom: 10,
-    backgroundColor: 'transparent', // Background color
+    backgroundColor: '#4B2FAC', // Background color
+  },
+
+  buttonContainer1: {
+    width: '100%',
+    height: 38, // Adjust the height of the button container
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2, // Thickness of the border
+    borderColor: 'white',
+    borderRadius: 20, // Soft circular edge
+    marginBottom: 10,
+    backgroundColor: '#4B2FAC', // Background color
+  },
+
+  imageCard: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10, // Add border radius if needed
+    overflow: 'hidden', // Ensure the image stays within the card boundaries
+  },
+  image: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
 });
 
