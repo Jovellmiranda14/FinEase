@@ -547,7 +547,7 @@ const styles = StyleSheet.create({
     top: -35,
   },
   sidebarItem: {
-    marginBottom: 10, 
+    marginBottom: 10,
     color: 'white',
     textAlign: "center",
     width: '100%',
@@ -598,8 +598,15 @@ const styles = StyleSheet.create({
   },
 
   buttonContainer: {
-    borderRadius: 15, // Apply border radius here
-    overflow: 'hidden', // This ensures the border radius is applied correctly
+    width: '100%',
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'white',
+    borderRadius: 20, // Soft circular edge
+    marginBottom: 10,
+    backgroundColor: 'transparent', // Background color
   },
 });
 

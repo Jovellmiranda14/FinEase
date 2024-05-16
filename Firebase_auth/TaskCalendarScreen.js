@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
     borderColor: 'white',
     borderRadius: 20, // Soft circular edge
     marginBottom: 10,
-    backgroundColor: '#4B2FAC', // Background color
+    backgroundColor: 'transparent', // Background color
   },
   buttonText: {
     color: 'white',
