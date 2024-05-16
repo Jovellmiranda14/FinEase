@@ -253,7 +253,7 @@ const RecordsScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.imageCard}>
-        {/* Content for the image card */}
+        <Image source={require('./assets/Records_Page_Banner.png')}style={styles.imageCard} />
         </View>
         <View style={styles.card1}>
           <Text style={styles.title}>Total Amount Spent:</Text>
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   Date: {
-    color: 'gray',
+    color: 'black',
   },
   deleteButton: {
     color: 'red',
