@@ -259,7 +259,7 @@ const TaskCalendar = ({ navigation }) => {
         style={{ backgroundColor: 'white', marginLeft: 20, marginRight: 20, borderRadius: 20 }}
       >
         {Array.from({ length: 50 }, (_, index) => (
-          <Picker.Item key={index} label={(2024 + index).toString()} value={2024 + index} color="#021C50" />
+          <Picker.Item key={index} label={(2023 + index).toString()} value={2023 + index} color="#021C50" />
         ))}
       </Picker>
             </View>

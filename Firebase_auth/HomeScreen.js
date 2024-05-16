@@ -146,7 +146,7 @@ const HomeScreen = () => {
             onPress={() => navigation.navigate(card.name)}
           >
             <Image source={card.image} style={styles.imageStyle} />
-            <Text style={styles.cardText}>{card.name}</Text>
+            <Text  style={styles.cardText}>{card.name}</Text>
             <View style={styles.bottomBorderFill} />
           </TouchableOpacity>
         ))}
@@ -303,6 +303,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'white',
     textShadowOffset: { width: 1, height: 1 },
     zIndex: 1,
+    fontWeight: 'bold'
   },
   cardTextTop: {
     bottom: 'auto',
