@@ -23,6 +23,10 @@ const SignUpForm = ({ onBackToLogin }) => {
 
 
   const handleSignUp = async () => {
+    if (!firstName || !lastName || !phoneNumber || !email || !dob || !password) {
+      setErrorMessage('All fields are required. Please fill out all fields.');
+      return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password, phoneNumber,dob);
       const user = userCredential.user;
