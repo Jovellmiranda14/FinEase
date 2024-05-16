@@ -600,17 +600,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  buttonContainer: {
-    width: '100%',
-    height: 38, // Adjust the height of the button container
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2, // Thickness of the border
-    borderColor: 'white',
-    borderRadius: 20, // Soft circular edge
-    marginBottom: 10,
-    backgroundColor: '#4B2FAC', // Background color
-  },
 
   buttonContainer1: {
     width: '100%',
