@@ -89,7 +89,7 @@ const TaskCalendar = ({ navigation }) => {
 
   const handleUpdateChart = () => {
     const newSeries = generateRandomSeries();
-    const newSliceColor = ['#000000', '#FFFFFF'];
+    const newSliceColor = ['#2C59B4', '#6C9AF5'];
     setCharts([...charts, { series: newSeries, sliceColor: newSliceColor, newChartTitle: newChartTitle, newChartDescription: newChartDescription }]);
   };
   const totalSeries = charts.reduce((acc, chart) => {
