@@ -121,7 +121,6 @@ const Investment = ({ navigation }) => {
               </View>
     
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Investments </Text>
     </View>
     <Modal
        animationType="none"
