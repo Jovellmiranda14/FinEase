@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Modal, Button } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Animated, Modal, Button, ImageBackground } from 'react-native';
 import { getAuth, onAuthStateChanged, signOut } from '@firebase/auth';
 import { getDatabase, ref, onValue } from '@firebase/database';
 import { getDownloadURL, ref as storageRef, getStorage } from "firebase/storage";
@@ -109,7 +109,8 @@ const Onlinebanking = ({navigation}) => {
   };
  
 
-  return (<ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
+  return (
+    <ImageBackground source={require('./assets/ONLINE BANKING.png')} style={styles.backgroundImage}>
     <View style={styles.container}>
     <View style={styles.header}>
             <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
@@ -194,6 +195,9 @@ const Onlinebanking = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,

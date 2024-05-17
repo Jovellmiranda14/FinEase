@@ -105,7 +105,7 @@ const Investment = ({ navigation }) => {
     };
    
   return (  
-    <ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
+    <ImageBackground source={require('./assets/INVESTMENT.png')} style={styles.backgroundImage}>
               <View style={styles.container}>
                 <View style={styles.header}>
                 <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
@@ -191,6 +191,9 @@ const Investment = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     padding: 20,
