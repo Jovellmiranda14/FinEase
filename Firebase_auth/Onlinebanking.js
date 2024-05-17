@@ -109,7 +109,7 @@ const Onlinebanking = ({navigation}) => {
   };
  
 
-  return (
+  return (<ImageBackground source={require('./assets/2ndBI.png')} style={styles.backgroundImage}>
     <View style={styles.container}>
     <View style={styles.header}>
             <TouchableOpacity onPress={toggleSidebar} style={styles.sidebarButton}>
@@ -189,6 +189,7 @@ const Onlinebanking = ({navigation}) => {
      </Modal>
      
     </View>
+    </ImageBackground>
   );
 };
 
