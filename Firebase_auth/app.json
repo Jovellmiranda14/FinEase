@@ -1,17 +1,13 @@
 {
   "expo": {
     "android": {
-      "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
-      ]
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "ios": {
-      "permissions": [
-        "CAMERA",
-        "PHOTO_LIBRARY_ADD_ONLY"
-      ]
+      "supportsTablet": true
     },
     "name": "Firebase_auth",
     "slug": "Firebase_auth",
@@ -27,17 +23,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3b0afd47-9a32-4695-b494-f5dd0a9bbb76"
+      }
     }
   }
 }
